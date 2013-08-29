@@ -15,27 +15,21 @@ Linux people who want to compile Kobuki driver, but not use ros
 
 @subsection prereq Prerequirements
 
-We use wstool to manage our workspace, so first install it:
+We use catkin to build. First of all you need to install some basic dependencies: 
 
-@code
-  sudo apt-get install python-wstool
-@endcode
-
-Starting with version 0.3.0, the Kobuki driver is a catkin package, so first of all you need to install catkin dependencies:
-
-- <i>CMake</i>      - A cross-platform, open-source build system.
-- <i>Python</i>     - Python is a general-purpose, interpreted high-level programming language.
+- <i>cmake</i>      - A cross-platform, open-source build system.
+- <i>python</i>     - Python is a general-purpose, interpreted high-level programming language.
+- <i>wstool</i>     - Workspace tool for downloading sources.
 - <i>catkin_pkg</i> - A Python runtime library for catkin.
 - <i>empy</i>       - A Python template library.
 - <i>nose</i>       - A Python testing framework.
 
-You can resolve these dependencies on Ubuntu with this command:
-
 @code
-  sudo apt-get install cmake python-catkin-pkg python-empy python-nose python-setuptools build-essential
+  sudo apt-get install python-wstool cmake python-catkin-pkg python-empy python-nose python-setuptools build-essential
 @endcode
 
-If you are <b>not</b> on Ubuntu you can install Python packages from <a href="http://pypi.python.org/pypi">PyPi</a> via pip. 
+If you are <b>not</b> on Ubuntu you can typically find cmake, python in your system repos and at worst, you can install python modules 
+from <a href="http://pypi.python.org/pypi">PyPi</a> via pip. 
 
 Refer to the <a href="http://ros.org/doc/groovy/api/catkin/html/">Catkin documentation</a> for more details.
 
