@@ -1,0 +1,22 @@
+<package>
+  <name>kobuki_dock_drive</name>
+  <version>0.5.0</version>
+  <description>
+	    Dock driving library for Kobuki. Users owning a docking station for Kobuki 
+	    can use this tool to develop autonomous docking drive algorithms.
+  </description>
+  <author email="yhju@yujinrobot.com">Younghun Ju</author>
+  <maintainer email="yhju@yujinrobot.com">Younghun Ju</maintainer>
+  <license>BSD</license>
+  <url type="bugtracker">https://github.com/yujinrobot/kobuki_core/issues</url>
+  <url type="repository">https://github.com/yujinrobot/kobuki_core</url>
+  <url type="website">http://ros.org/wiki/kobuki_dock_drive</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>ecl_threads</build_depend>
+  <build_depend>ecl_geometry</build_depend>
+  <build_depend>ecl_linear_algebra</build_depend>
+  <run_depend>ecl_threads</run_depend>
+  <run_depend>ecl_geometry</run_depend>
+  <run_depend>ecl_linear_algebra</run_depend>
+</package>

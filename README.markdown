@@ -1,7 +1,7 @@
-Kobuki
-======
+Kobuki Core
+===========
 
-The kobuki stack consists the C++ driver for communicating with [iClebo Kobuki](http:/kobuki.yujinrobot.com) and a wrapper for [ROS](http://www.ros.org).
+The kobuki stack consists the C++ driver for communicating with [iClebo Kobuki](http:/kobuki.yujinrobot.com).
 
 ![Kobuki Logo](http://kobuki.yujinrobot.com/files/cache/3e02b571192eb6f4ea15e3ad52419cd3.png)
 

@@ -1,0 +1,20 @@
+##############################################################################
+#
+# Kobuki Core install file.
+#
+# Before rosinstalling, make sure you installed:
+#
+# Latest build tools
+#   sudo apt-get install ros-hydro-catkin
+#
+# Kobuki FTDI (Firmware Updates)
+#   sudo apt-get install libftdi-dev
+#
+# Ecl dependency
+#   sudo apt-get install ros-groovy-ecl-threads ros-groovy-ecl-devices ros-groovy-ecl-streams ros-groovy-ecl-mobile-robot ros-groovy-ecl-sigslots 
+#
+##############################################################################
+
+# Kobuki Core / Yujin stacks
+
+- git: {local-name: kobuki_core, version: hydro-devel, uri: 'https://github.com/yujinrobot/kobuki.git'}
