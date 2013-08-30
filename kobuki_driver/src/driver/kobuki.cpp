@@ -302,7 +302,7 @@ void Kobuki::spin()
               int version_match = firmware.check_major_version();
               if (version_match < 0) {
                 sig_error.emit("Robot firmware is outdated and needs to be upgraded. Consult how-to on: " \
-                               "http://kobuki.yujinrobot.com/documentation/howtos/upgrading-firmware");
+                               "http://kobuki.yujinrobot.com/home-en/documentation/howtos/upgrading-firmware");
                 sig_error.emit("Robot firmware version is " + VersionInfo::toString(firmware.data.version)
                              + "; latest version is " + firmware.current_version());
                 shutdown_requested = true;
@@ -318,7 +318,7 @@ void Kobuki::spin()
                 if (version_match < 0) {
                   sig_warn.emit("Robot firmware is outdated; we suggest you to upgrade it " \
                                 "to benefit from the latest features. Consult how-to on: "  \
-                                "http://kobuki.yujinrobot.com/documentation/howtos/upgrading-firmware");
+                                "http://kobuki.yujinrobot.com/home-en/documentation/howtos/upgrading-firmware");
                   sig_warn.emit("Robot firmware version is " + VersionInfo::toString(firmware.data.version)
                               + "; latest version is " + firmware.current_version());
                 }
@@ -496,7 +496,7 @@ bool Kobuki::setControllerGain(const unsigned char &type, const unsigned int &p_
 {
   if ((firmware.flashed_major_version() < 2) && (firmware.flashed_minor_version() < 2)) {
     sig_warn.emit("Robot firmware doesn't support this function, so you must upgrade it. " \
-                  "Consult how-to on: http://kobuki.yujinrobot.com/documentation/howtos/upgrading-firmware");
+                  "Consult how-to on: http://kobuki.yujinrobot.com/home-en/documentation/howtos/upgrading-firmware");
     sig_warn.emit("Robot firmware version is " + VersionInfo::toString(firmware.data.version)
                 + "; latest version is " + firmware.current_version());
     return false;
@@ -510,7 +510,7 @@ bool Kobuki::getControllerGain()
 {
   if ((firmware.flashed_major_version() < 2) && (firmware.flashed_minor_version() < 2)) {
     sig_warn.emit("Robot firmware doesn't support this function, so you must upgrade it. " \
-                  "Consult how-to on: http://kobuki.yujinrobot.com/documentation/howtos/upgrading-firmware");
+                  "Consult how-to on: http://kobuki.yujinrobot.com/home-en/documentation/howtos/upgrading-firmware");
     sig_warn.emit("Robot firmware version is " + VersionInfo::toString(firmware.data.version)
                 + "; latest version is " + firmware.current_version());
     return false;
