@@ -2,6 +2,9 @@
 Changelog for package kobuki_core
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.5.1 (2013-08-30)
+------------------
+
 0.5.0 (2013-08-29)
 ------------------
 * Separated into kobuki_core stack
@@ -12,3 +15,8 @@ Changelog for package kobuki_core
 * Fix URL to the previous changelog wiki
 * Changelogs at package level
 
+
+Previous versions, bugfixing
+============================
+
+Available in ROS wiki: http://ros.org/wiki/kobuki/ChangeList

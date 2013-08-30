@@ -2,6 +2,10 @@
 Changelog for package kobuki_ftdi
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.5.1 (2013-08-30)
+------------------
+* Updated license info.
+
 0.5.0 (2013-08-29)
 ------------------
 * Added extra url info on all packages.

@@ -2,6 +2,12 @@
 Changelog for package kobuki_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.5.1 (2013-08-30)
+------------------
+* Updated license info.
+* Updated doxygen in the code.
+* Update firmware_changelog.md
+
 0.5.0 (2013-08-29)
 ------------------
 * Added debug topic of raw control command of robot
