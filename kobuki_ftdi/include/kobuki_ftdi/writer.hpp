@@ -30,7 +30,7 @@
  * @file include/kobuki_ftdi/writer.hpp
  * @brief Provides common modulde for wrting serial number and other data into the eeprom of ftdi chip.
  *
- * <b>License:</b> BSD https://raw.github.com/yujinrobot/kobuki/master/kobuki_node/LICENSE
+ * <b>License:</b> BSD https://raw.github.com/yujinrobot/kobuki_core/hydro-devel/kobuki_ftdi/LICENSE
  *
  **/
 

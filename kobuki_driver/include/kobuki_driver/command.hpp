@@ -4,7 +4,7 @@
  * @brief Command structure.
  *
  * License: BSD
- *   https://raw.github.com/yujinrobot/kobuki/master/kobuki_driver/LICENSE
+ *   https://raw.github.com/yujinrobot/kobuki_core/hydro-devel/kobuki_driver/LICENSE
  **/
 /*****************************************************************************
 ** Preprocessor
@@ -119,8 +119,8 @@ public:
   static Command SetVelocityControl(const int16_t &speed, const int16_t &radius);
   static Command SetControllerGain(const unsigned char &type,
                                    const unsigned int &p_gain,
-                                   const unsigned int &d_gain,
-                                   const unsigned int &i_gain);
+                                   const unsigned int &i_gain,
+                                   const unsigned int &d_gain);
   static Command GetControllerGain();
 
   Data data;

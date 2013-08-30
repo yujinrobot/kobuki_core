@@ -34,7 +34,7 @@
  * Note that I can't get the requested size one to actually work.
  * So I've commented that out for now.
  *
- * <b>License:</b> BSD https://raw.github.com/yujinrobot/kobuki/master/kobuki_node/LICENSE
+ * <b>License:</b> BSD https://raw.github.com/yujinrobot/kobuki_core/hydro-devel/kobuki_ftdi/LICENSE
  *
  **/
 

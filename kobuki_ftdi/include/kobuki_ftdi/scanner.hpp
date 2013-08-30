@@ -32,7 +32,7 @@
  *
  * Product ID and Vendor ID is fixed to FTDI FT232R chip. If you modify these value, you can use another ftdi device or USB devices.
  *
- * <b>License:</b> BSD https://raw.github.com/yujinrobot/kobuki/master/kobuki_node/LICENSE
+ * <b>License:</b> BSD https://raw.github.com/yujinrobot/kobuki_core/hydro-devel/kobuki_ftdi/LICENSE
  *
  **/
 
