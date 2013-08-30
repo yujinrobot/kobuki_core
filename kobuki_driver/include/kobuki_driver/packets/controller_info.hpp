@@ -1,7 +1,7 @@
 /**
  * @file kobuki_driver/packets/controller_info.hpp
  *
- * @brief Docking infrared sensor packet payloads.
+ * @brief Controller info packet payloads.
  *
  * License: BSD
  *   https://raw.github.com/yujinrobot/kobuki/master/kobuki_driver/LICENSE
@@ -89,4 +89,4 @@ public:
 
 } // namespace kobuki
 
-#endif /* KOBUKI_IR_DATA_HPP__ */
+#endif /* KOBUKI_CONTROLLER_INFO_HPP__ */
