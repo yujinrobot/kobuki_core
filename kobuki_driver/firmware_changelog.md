@@ -3,7 +3,11 @@ Firmware Changelog
 
 This documents the version changes to the kobuki firmware. ***note that not this software package!***
 
-#### v1.1.4 
+#### v1.2.0
+2013-08-30 **Jae Young Lee** <<jakan2@yujinrobot.com>>
+* Custom PID gain setting of wheel velocity controlled added
+
+#### v1.1.4
 2013-02-22 **Jae Young Lee** <<jakan2@yujinrobot.com>>
 * Gyro drift bug fixed
 
