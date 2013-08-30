@@ -30,7 +30,7 @@
  * @file src/overwrite_serial_number.cpp
  * @brief Overwrite serial number of ftdi device.
  *
- * <b>License:</b> BSD https://raw.github.com/yujinrobot/kobuki/master/kobuki_node/LICENSE
+ * <b>License:</b> BSD https://raw.github.com/yujinrobot/kobuki_core/hydro-devel/kobuki_ftdi/LICENSE
  *
  **/
 

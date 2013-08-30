@@ -6,7 +6,7 @@
  * Flash automatically when there is not flashed FTDI devices.
  * (Later)This program accept loop mode
  *
- * <b>License:</b> BSD https://raw.github.com/yujinrobot/kobuki/master/kobuki_node/LICENSE
+ * <b>License:</b> BSD https://raw.github.com/yujinrobot/kobuki_core/hydro-devel/kobuki_ftdi/LICENSE
  *
  **/
 

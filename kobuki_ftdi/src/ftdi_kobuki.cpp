@@ -49,7 +49,7 @@
  * - builds the eeprom binary from this
  * - flashes the eeprom binary to the device
  *
- * <b>License:</b> BSD https://raw.github.com/yujinrobot/kobuki/master/kobuki_node/LICENSE
+ * <b>License:</b> BSD https://raw.github.com/yujinrobot/kobuki_core/hydro-devel/kobuki_ftdi/LICENSE
  *
  **/
 
