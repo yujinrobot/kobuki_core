@@ -2,21 +2,25 @@
 Changelog for package kobuki_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.5.2 (2013-08-31)
+------------------
+* Documentation and other text files reviewed.
+
 0.5.1 (2013-08-30)
 ------------------
 * Updated license info.
 * Updated doxygen in the code.
-* Update firmware_changelog.md
+* Update firmware_changelog.md.
 
 0.5.0 (2013-08-29)
 ------------------
-* Added debug topic of raw control command of robot
+* Added debug topic of raw control command of robot.
 * Removed debugging message.
 * Updated doxygen about factory-default value of PID gain.
-* add firmware version checking on PID commands
+* Add firmware version checking on PID commands.
 * Updated protocol specification in doxygen about custom PID gain setting.
 * Updated doxygen script to let user do something when authentification of repository is failed.
-* Bump minor version for firmware (new version is 1.2.0)
+* Bump minor version for firmware (new version is 1.2.0).
 * Improved packet integrity checking. Issue `#245 <https://github.com/yujinrobot/kobuki/issues/245>`_.
 * Added new protocol about custom PID gain setting. Issue `#249 <https://github.com/yujinrobot/kobuki/issues/249>`_.
 * Updated doxygen.
