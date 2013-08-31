@@ -3,7 +3,7 @@
 
 # Basic setup
 if [ "$ROS_DISTRO" == "" ]; then
-  ROS_DISTRO=groovy
+  ROS_DISTRO=hydro
 fi
 
 if [ "$SOURCE" == "" ]; then
@@ -41,10 +41,11 @@ fi
 
 # Clone kobuki repository into temporal working directory
 cd $WORKDIR
+git clone https://github.com/yujinrobot/kobuki_core
 git clone https://github.com/yujinrobot/kobuki
 
 # Checkout source branch
-cd kobuki
+cd kobuki_core
 if [ "git branch | grep $SOURCE" == "" ]; then
   git branch -t $SOURCE origin/$SOURCE
 fi
@@ -57,7 +58,7 @@ make doxygen
 mv ./doc/html ../../doxygen
 
 # Checkout target branch
-cd ../
+cd ../../kobuki
 if [ "git branch | grep $SOURCE" == "" ]; then
   git branch -t $TARGET origin/$TARGET
 fi
