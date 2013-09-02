@@ -77,6 +77,7 @@ git push origin $TARGET
 if [ $? -eq 0 ]; then
   echo
   echo 'done'
+  exit 0
 else
   echo
   echo 'Authentification of repository failed.';
@@ -89,8 +90,8 @@ fi
 
 #### Cleanup
 ###rm -rf $WORKDIR
+###
+###echo 'done'
 # Temporarily disable it, because of
 #  1) $WORKDIR is in /tmp directory, it will be removed on shutdown
 #  2) To let user do something, when authentification of repository is failed.
-
-echo 'done'
