@@ -28,9 +28,9 @@
  */
 
 /**
- * @file /kobuki_driver/src/tool/simple_keyop.cpp
+ * @file /kobuki_driver/src/tools/simple_keyop.cpp
  *
- * @brief Tools/utility program to control by keyboard.
+ * @brief Tools/utility program to control robot by keyboard.
  *
  **/
 
