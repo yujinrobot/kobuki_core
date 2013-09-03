@@ -39,6 +39,7 @@ We have a simple implementation in the guides below and a more detailed implemen
 - @ref enSigslotsGuide "Sigslots"
 - @ref enSimpleExample "Simple Control Loop Example"
 - @ref enEmbeddedBoardTutorial "Embedded Board Tutorial"
+- @ref enAppendixKobukiParameters "Appendix : Kobuki Parameters"
 - @ref enAppendixProtocolSpecification "Appendix : Protocol Specification"
 - @ref enAppendixVersionInfo "Appendix : Version Info"
 

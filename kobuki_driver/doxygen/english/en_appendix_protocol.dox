@@ -390,21 +390,12 @@ Basic core sensor data. <!--Robot will sends this data periodically from power o
 
 @note
 This sub-payload will be sent by default.
+@sa @ref enAppendixKobukiParameters - necessary parameters for conversion of encoder ticks to robot pose.
 
 <br>
 
-<!--
-<!--- Kobuki Parameters ---
-@subsubsection enKobukiParameters Kobuki Parameters
 
-<!-- TODO --
-- wheelbase(bias)
-- encoder ratio/gear ratio
-   -# ticks_to_millimeter
-   -# ticks_to_radian
 
-<br>
--->
 
 <!--- Docking IR --->
 
