@@ -190,7 +190,23 @@ Here are template functions to handle it on kobuki_deriver, @ref packet_handler:
 <!--- Base Control --->
 @subsection enBaseControl Base Control
 
-Control wheel motors to moving robot. Robot will follow the arc, which radius is <b>&lt;Radius&gt;</b> mm, with <b>&lt;Velocity&gt;</b> mm/s.
+Control wheel motors to moving robot. Robot will follow the arc line, which radius is <b>&lt;Radius&gt;</b> mm, with <b>&lt;Speed&gt;</b> mm/s. Positive Radius indicates center of arc line that robot follows is located at the left side of the robot. Negative is opposite.<br>
+
+@image html velocity_representation.png "Velocity Representation"
+
+But actual value of Speed field is little bit different. Here is conversion table.
+
+<table>
+<tr><th>Motion</th><th>Speed(mm/s)</th><th>Radius(mm)</th></tr>
+<tr><td>Pure Translation</td><td>Speed</td><td>0</td></tr>
+<tr><td>Pure Rotation</td><td>w<b><sup>i)</sup></b> * b<b><sup>ii)</sup></b> / 2</td><td>1</td></tr>
+<tr><td rowspan="2">Translation + Rotation</td><td>Speed * ( Radius + b<b><sup>ii)</sup></b> / 2 ) / Radius, if Radius > 1<br>Speed * ( Radius - b<b><sup>ii)</sup></b> / 2 ) / Radius, if Radius < -1</td><td>Radius</td></tr>
+</table>
+<b>i)</b> w is rotation speed of the robot, in [rad/s].<br>
+<b>ii)</b> b is <i>bias</i> or <i>wheelbase</i>, that indicates the length between the center of the wheels. Fixed at 230 mm.<br>
+<br>
+
+
 
 <table>
 <tr><th></th><th>Name</th><th width="40">Size</th><th width="40">Value</th><th>Value in Hex</th><th>Description</th></tr>
