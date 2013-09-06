@@ -2,6 +2,9 @@
 Changelog for package kobuki_core
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.5.3 (2013-09-06)
+------------------
+
 0.5.2 (2013-08-31)
 ------------------
 * Fix the list of packages on this stack.

@@ -2,6 +2,10 @@
 Changelog for package kobuki_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.5.3 (2013-09-06)
+------------------
+* Updated doxygen documentation.
+
 0.5.2 (2013-08-31)
 ------------------
 * Documentation and other text files reviewed.
