@@ -10,45 +10,44 @@
 
 @subsection eeprom Programming the Eeprom
 
+- Install kobuki_ftdi package
 - Plug in the device
-- Compile the package and execute ftdi_kobuki
+- Execute ftdi_kobuki
+
+If kobuki_ftdi package is not installed yet:
+@verbatim
+$ sudo apt-get update
+$ sudo apt-get install ros-hydro-kobuki-ftdi
+@endverbatim
+
+For more detailed information about installation, refer to the http://wiki.ros.org/kobuki/Tutorials/Installation
+
 
 If it is the only FTDI device plugged in, simply
 
-@code
-$ rosdep install kobuki_ftdi
-$ roscd kobuki_ftdi
-$ make
-$ sudo ./bin/ftdi_koboki
-@endcode
+@verbatim
+$ sudo /opt/ros/hydro/lib/kobuki_ftdi/ftdi_koboki
+@endverbatim
 
 will do the job, if not - optionally add an argument with the current serial id of the FTDI
-chip you want to flash to the last command. 
+chip you want to flash to the last command.
 
 If things go bums up, then you will find an eeprom.backup saved in your current directory that you
 can reflash back to the chip (using ftdi_write_eeprom).
-@code
-$ sudo ./bin/ftdi_write_eeprom -f eeprom.req
-@endcode
+@verbatim
+$ sudo /opt/ros/hydro/lib/kobuki_ftdi/ftdi_write_eeprom -f eeprom.req
+@endverbatim
 
 @subsection udev Preparing Udev
 
 @verbatim
-$ roscd kobuki_ftdi
-$ make udev
-
-Copying 57-kobuki.rules -> to /etc/udev/rules.d
-
-[sudo] password for dude:
-Adding user `dude' to group `dialout' ...
-Adding user dude to group dialout
-Done.
-udev stop/waiting
-udev start/running, process 15150
+$ sudo addgroup $USER dialout
+$ sudo cp 57-kobuki.rules /etc/udev/rules.d
+$ sudo service udev reload
+$ sudo service udev restart
+@endverbatim
 
 Logout and log back in to make sure the dialout group permissions take affect.
-
-@endverbatim
 
 @section Issues
 
