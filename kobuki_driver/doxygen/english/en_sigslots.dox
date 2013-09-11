@@ -4,19 +4,19 @@
 
 @section sigslotsIntro Introduction
 
-Sigslots are the primary way to handle events emitted by the kobuki driver (c.f. with the usual 
-function callbacks with void function pointers as arguments). Rather than repeating here a 
+Sigslots are the primary way to handle events emitted by the kobuki driver (c.f. with the usual
+function callbacks with void function pointers as arguments). Rather than repeating here a
 verbose explanation of what they are and how they work, the best option is to go straight to the
 official documentation - <a href="http://ros.org/wiki/ecl_sigslots">ecl_sigslots</a>.
 
 @section sigslotReference Sigslot Reference
 
-The kobuki driver establishes a set of signals on uniquely established namespaces. The 
-namespace for each is separated into two parts - the first is the namespace specified by 
+The kobuki driver establishes a set of signals on uniquely established namespaces. The
+namespace for each is separated into two parts - the first is the namespace specified by
 the sigslots_namespace variable in the kobuki::Parameter strucutre. The second
-uniquely identifies the signal itself. 
+uniquely identifies the signal itself.
 
-The following represent the available signals when namespaced under "/kobuki" (default). 
+The following represent the available signals when namespaced under "/kobuki" (default).
 
 - void : /kobuki/stream_data : informs when a new data packet has arrived from the kobuki
 - std::string : /kobuki/ros_debug : relay debug messages
@@ -40,7 +40,7 @@ The <i>/kobuki/stream_data</i> is the most important slot. The kobuki sends a si
 periodically and when this is received, it emits a signal informing you that it has arrived and is
 ready to be processed. At this point, you can quiz the kobuki driver for the state (
 @ref kobuki::Kobuki::getCoreSensorData) which returns a @ref kobuki::CoreSensors::Data structure
-holding all the important sensor information for kobuki.  
+holding all the important sensor information for kobuki.
 
 @subsection simpleExample Simple Example - Catching Wheel Odometry
 
@@ -108,7 +108,7 @@ More detailed example code can be found in the ros kobuki node implementation. S
 
 @section Troubleshooting
 
-While debugging, you may often accidentally leave sigslots dangling, typos for the connection 
+While debugging, you may often accidentally leave sigslots dangling, typos for the connection
 name are a common cause. For this, there is an introspection method available which you can
 use to quickly print the currently sigslot connections (dangling or otherwise).
 
@@ -117,7 +117,7 @@ A code snippet:
 @code
   Kobuki kobuki
   Parameters parameters;
-  // configure parameters here 
+  // configure parameters here
   kobuki.init(parameters);
   // make some sigslot connections here
   kobuki.printSigSlotConnections();
@@ -158,6 +158,6 @@ Topics
 ...
 @endcode
 
-This uses the sigslots manager to retrieve the information. A full example of its use can be found in the ecl_sigslot sources: <a href="http://ros.org/doc/groovy/api/ecl_sigslots/html/sigslots__manager_8cpp_source.html">example cpp program</a>. 
+This uses the sigslots manager to retrieve the information. A full example of its use can be found in the ecl_sigslot sources: <a href="http://ros.org/doc/hydro/api/ecl_sigslots/html/sigslots__manager_8cpp_source.html">example cpp program</a>.
 
 **/
