@@ -77,6 +77,7 @@ Raw data can be accessed at any time by one of the following getXXX commands:
 - kobuki::Kobuki::getGpInputData
 - kobuki::Kobuki::getInertiaData
 - kobuki::Kobuki::getRawInertiaData
+- kobuki::Kobuki::getControllerInfoData
 
 The gyro provides both filtered yaw angle as well as unfiltered 3-axis inertial data hence the
 two calls above.
@@ -106,6 +107,8 @@ The following are convenience methods for accessing the current state of the rob
 - kobuki::Kobuki::setDigitalOutput
 - kobuki::Kobuki::setExternalPower
 - kobuki::Kobuki::playSoundSequence
+- kobuki::Kobuki::setControllerGain
+- kobuki::Kobuki::getControllerGain
 
 @subsection differentialDriverModule The Differential Drive Module
 
