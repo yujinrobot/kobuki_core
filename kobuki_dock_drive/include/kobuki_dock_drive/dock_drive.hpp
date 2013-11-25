@@ -110,7 +110,6 @@ public:
                 , const unsigned char &bumper
                 , const unsigned char &charger
                 , const ecl::Pose2D<double> &pose);
-  void computePoseUpdate(ecl::Pose2D<double>& pose_update, const ecl::Pose2D<double>& pose);
 
   void velocityCommands(const double &vx, const double &wz);
 
@@ -140,6 +139,10 @@ public:
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
+protected:
+  void computePoseUpdate(ecl::Pose2D<double>& pose_update, const ecl::Pose2D<double>& pose);
+void filterIRSensor(std::vector<unsigned char>& signal_filt,const std::vector<unsigned char> &signal );
+
 private:
   bool is_enabled, can_run;
 
@@ -147,6 +150,7 @@ private:
   std::string state_str, debug_str;
   double vx, wz;
   std::vector<std::vector<unsigned char> > past_signals;
+  unsigned int signal_window;
   int bump_remainder;
   int dock_stabilizer;
   int dock_detector;

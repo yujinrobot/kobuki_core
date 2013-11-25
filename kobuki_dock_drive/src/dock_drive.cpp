@@ -65,6 +65,7 @@ DockDrive::DockDrive() :
   , rotated(0.0)
   , min_abs_v(0.01)
   , min_abs_w(0.1)
+  , signal_window(20)
 {
 }
 
@@ -101,24 +102,14 @@ void DockDrive::update(const std::vector<unsigned char> &signal
                 , const ecl::Pose2D<double>& pose) {
 
   ecl::Pose2D<double> pose_update;
-  computePoseUpdate(pose_update, pose);
+  std::vector<unsigned char> signal_filt(signal.size(), 0);
 
   /*************************
    * pre processing
    *************************/
+  computePoseUpdate(pose_update, pose);
+  filterIRSensor(signal_filt, signal);
 
-  //dock_ir signals filtering
-  past_signals.push_back(signal);
-  unsigned int window = 20;
-  while (past_signals.size() > window)
-    past_signals.erase( past_signals.begin(), past_signals.begin() + past_signals.size() - window );
-
-  std::vector<unsigned char> signal_filt(signal.size(), 0);
-  for ( unsigned int i=0; i<past_signals.size(); i++) {
-    if (signal_filt.size() != past_signals[i].size()) continue;
-    for (unsigned int j=0; j<signal_filt.size(); j++)
-      signal_filt[j] |= past_signals[i][j];
-  }
 
 
   /*************************
@@ -330,6 +321,30 @@ void DockDrive::computePoseUpdate(ecl::Pose2D<double>& pose_update, const ecl::P
   //std::cout << pose_diff << "=" << pose << "-" << pose_priv << " | " << pose_update << std::endl;
   pose_priv = pose;
 
+}
+
+
+/**
+ * @breif pushing into signal into signal window. and go through the signal window to find what has detected
+ *
+ * @param signal_filt - this get filled out after the function. 
+ * @param signal - the raw data from robot
+ **/
+
+void DockDrive::filterIRSensor(std::vector<unsigned char>& signal_filt,const std::vector<unsigned char> &signal)
+{
+  //dock_ir signals filtering
+  past_signals.push_back(signal);
+  while (past_signals.size() > signal_window) {
+    past_signals.erase( past_signals.begin(), past_signals.begin() + past_signals.size() - signal_window);
+  }
+
+  for ( unsigned int i = 0; i < past_signals.size(); i++) {
+    if (signal_filt.size() != past_signals[i].size()) 
+      continue;
+    for (unsigned int j = 0; j < signal_filt.size(); j++)
+      signal_filt[j] |= past_signals[i][j];
+  }
 }
 
 
