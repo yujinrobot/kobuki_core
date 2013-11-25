@@ -110,7 +110,7 @@ public:
                 , const unsigned char &bumper
                 , const unsigned char &charger
                 , const ecl::Pose2D<double> &pose);
-  void computePoseUpdate(ecl::Pose2D<double>& pose_update, const ecl::Pose2D<double& pose);
+  void computePoseUpdate(ecl::Pose2D<double>& pose_update, const ecl::Pose2D<double>& pose);
 
   void velocityCommands(const double &vx, const double &wz);
 

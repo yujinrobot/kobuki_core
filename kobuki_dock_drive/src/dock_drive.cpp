@@ -98,7 +98,7 @@ void DockDrive::modeShift(const std::string& mode)
 void DockDrive::update(const std::vector<unsigned char> &signal
                 , const unsigned char &bumper
                 , const unsigned char &charger
-                , const ecl::Pose2D<double> &pose) {
+                , const ecl::Pose2D<double>& pose) {
 
   ecl::Pose2D<double> pose_update;
   computePoseUpdate(pose_update, pose);
