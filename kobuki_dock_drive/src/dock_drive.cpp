@@ -321,11 +321,8 @@ void DockDrive::update(const std::vector<unsigned char> &signal
  * @param pose update. this variable get filled after this function 
  * @param pose - current pose
  **/
-void DockDrive::computePoseUpdate(ecl::Pose2D<double>& pose_update, const ecl::Pose2D<double& pose)
+void DockDrive::computePoseUpdate(ecl::Pose2D<double>& pose_update, const ecl::Pose2D<double>& pose)
 {
-
-
-
   double dx = pose.x() - pose_priv.x();
   double dy = pose.y() - pose_priv.y();
   pose_update.x( std::sqrt( dx*dx + dy*dy ) );
