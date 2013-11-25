@@ -118,7 +118,6 @@ void DockDrive::update(const std::vector<unsigned char> &signal
    * processing. algorithms; transforma to velocity command
    *************************/
   //std::string debug_str = "";
-  debug_str = "";
   do {  // a kind of hack
     if ( state==DONE ) setState(IDLE); // when this function is called after final state 'DONE'.
     if ( state==DOCKED_IN ) {
@@ -238,14 +237,14 @@ void DockDrive::update(const std::vector<unsigned char> &signal
     setStateVel(UNKNOWN, 0.00, 0.00); break;
   } while(0);
 
-  //debug_stream << std::fixed << std::setprecision(4)
-  debug_stream << "[vx: " << std::setw(7) << vx << ", wz: " << std::setw(7) << wz << "]";
-  debug_stream << "[S: " << state_str << "]";
-  debug_stream << "[" << debug_str << "]";
-  //debug_stream << std::endl;
-  debug_output = debug_stream.str();
 
-  //std::cout << debug_output << std::endl;;
+
+
+
+
+
+
+
 
   velocityCommands(vx, wz);
 //  this->vx = vx; this->wz = wz;
@@ -313,7 +312,7 @@ std::string DockDrive::binary(unsigned char number) const {
 
 
 
-void DockDrive::generateDebugMessage(const ecl::Pose2D<double>& pose_update, const std::vector<unsigned char>& signal_filt, const unsigned char &bumpe, const unsigned char &charger)
+void DockDrive::generateDebugMessage(const ecl::Pose2D<double>& pose_update, const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger)
 {
   /*************************
    * debug prints
@@ -369,6 +368,16 @@ void DockDrive::generateDebugMessage(const ecl::Pose2D<double>& pose_update, con
   oss << ")]";
   debug_stream << oss.str();
   }
+
+  //debug_stream << std::fixed << std::setprecision(4)
+  debug_stream << "[vx: " << std::setw(7) << vx << ", wz: " << std::setw(7) << wz << "]";
+  debug_stream << "[S: " << state_str << "]";
+  debug_stream << "[" << debug_str << "]";
+  //debug_stream << std::endl;
+  debug_output = debug_stream.str();
+
+  //std::cout << debug_output << std::endl;;
+}
 
 
 
