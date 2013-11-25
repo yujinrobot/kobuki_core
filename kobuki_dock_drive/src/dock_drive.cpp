@@ -110,13 +110,16 @@ void DockDrive::update(const std::vector<unsigned char> &signal
   computePoseUpdate(pose_update, pose);
   filterIRSensor(signal_filt, signal);
 
+  if(isEnabled()) {
+    // state transition 
+    updateVelocity(signal_filt, bumper, charger, pose_update);
+    velocityCommands(vx, wz);
+  }
+
   // for easy debugging
   generateDebugMessage(signal_filt, bumper, charger, pose_update);
-  
-  // state transition 
-  updateVelocity(signal_filt, bumper, charger, pose_update);
-  
-  velocityCommands(vx, wz);
+
+
   return;
 }
 
