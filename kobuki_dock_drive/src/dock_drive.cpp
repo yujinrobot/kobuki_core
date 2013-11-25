@@ -111,61 +111,7 @@ void DockDrive::update(const std::vector<unsigned char> &signal
   filterIRSensor(signal_filt, signal);
 
 
-
-  /*************************
-   * debug prints
-   *************************/
-  std::ostringstream debug_stream;
-  // pose_update and pose_update_rates for debugging
-  debug_stream << std::fixed << std::setprecision(4)
-    << "[x: "    << std::setw(7) << pose_update.x()
-    << ", y: "  << std::setw(7) << pose_update.y()
-    << ", th: " << std::setw(7) << pose_update.heading()
-    << "]";
-
-  //dock_ir signal
-  /*
-  debug_stream 
-    << "[l: "  << binary(signal_filt[2])
-    << ", c: " << binary(signal_filt[1])
-    << ", r: " << binary(signal_filt[0])
-    << "]";
-  */
-  std::string far_signal  = "[F: "; //far field
-  std::string near_signal = "[N: "; //near field
-  for (unsigned int i=0; i<3; i++) {
-    if (signal_filt[2-i]&FAR_LEFT   ) far_signal  += "L"; else far_signal  += "-";
-    if (signal_filt[2-i]&FAR_CENTER ) far_signal  += "C"; else far_signal  += "-";
-    if (signal_filt[2-i]&FAR_RIGHT  ) far_signal  += "R"; else far_signal  += "-";
-    if (signal_filt[2-i]&NEAR_LEFT  ) near_signal += "L"; else near_signal += "-";
-    if (signal_filt[2-i]&NEAR_CENTER) near_signal += "C"; else near_signal += "-";
-    if (signal_filt[2-i]&NEAR_RIGHT ) near_signal += "R"; else near_signal += "-";
-    far_signal  += " ";
-    near_signal += " ";
-  }
-  far_signal  += "]";
-  near_signal += "]";
-  debug_stream << far_signal << near_signal;
-
-  //bumper
-  {
-  std::string out = "[B: ";
-  if (bumper&4) out += "L"; else out += "-";
-  if (bumper&2) out += "C"; else out += "-";
-  if (bumper&1) out += "R"; else out += "-";
-  out += "]";
-  debug_stream << out;
-  }
-
-  //charger
-  {
-  std::ostringstream oss;
-  oss << "[C:" << std::setw(2) << (unsigned int)charger;
-  oss << "(";
-  if (charger) oss << "ON"; else oss << "  ";
-  oss << ")]";
-  debug_stream << oss.str();
-  }
+  generateDebugMessage(pose_update, signal_filt, bumper, charger);
 
 
   /*************************
@@ -365,4 +311,68 @@ std::string DockDrive::binary(unsigned char number) const {
   return ret;
 }
 
+
+
+void DockDrive::generateDebugMessage(const ecl::Pose2D<double>& pose_update, const std::vector<unsigned char>& signal_filt, const unsigned char &bumpe, const unsigned char &charger)
+{
+  /*************************
+   * debug prints
+   *************************/
+  std::ostringstream debug_stream;
+  // pose_update and pose_update_rates for debugging
+  debug_stream << std::fixed << std::setprecision(4)
+    << "[x: "    << std::setw(7) << pose_update.x()
+    << ", y: "  << std::setw(7) << pose_update.y()
+    << ", th: " << std::setw(7) << pose_update.heading()
+    << "]";
+
+  //dock_ir signal
+  /*
+  debug_stream 
+    << "[l: "  << binary(signal_filt[2])
+    << ", c: " << binary(signal_filt[1])
+    << ", r: " << binary(signal_filt[0])
+    << "]";
+  */
+  std::string far_signal  = "[F: "; //far field
+  std::string near_signal = "[N: "; //near field
+  for (unsigned int i=0; i<3; i++) {
+    if (signal_filt[2-i]&FAR_LEFT   ) far_signal  += "L"; else far_signal  += "-";
+    if (signal_filt[2-i]&FAR_CENTER ) far_signal  += "C"; else far_signal  += "-";
+    if (signal_filt[2-i]&FAR_RIGHT  ) far_signal  += "R"; else far_signal  += "-";
+    if (signal_filt[2-i]&NEAR_LEFT  ) near_signal += "L"; else near_signal += "-";
+    if (signal_filt[2-i]&NEAR_CENTER) near_signal += "C"; else near_signal += "-";
+    if (signal_filt[2-i]&NEAR_RIGHT ) near_signal += "R"; else near_signal += "-";
+    far_signal  += " ";
+    near_signal += " ";
+  }
+  far_signal  += "]";
+  near_signal += "]";
+  debug_stream << far_signal << near_signal;
+
+  //bumper
+  {
+  std::string out = "[B: ";
+  if (bumper&4) out += "L"; else out += "-";
+  if (bumper&2) out += "C"; else out += "-";
+  if (bumper&1) out += "R"; else out += "-";
+  out += "]";
+  debug_stream << out;
+  }
+
+  //charger
+  {
+  std::ostringstream oss;
+  oss << "[C:" << std::setw(2) << (unsigned int)charger;
+  oss << "(";
+  if (charger) oss << "ON"; else oss << "  ";
+  oss << ")]";
+  debug_stream << oss.str();
+  }
+
+
+
+
+
 } // namespace kobuki
+

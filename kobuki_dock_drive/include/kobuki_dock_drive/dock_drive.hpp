@@ -141,7 +141,8 @@ public:
 
 protected:
   void computePoseUpdate(ecl::Pose2D<double>& pose_update, const ecl::Pose2D<double>& pose);
-void filterIRSensor(std::vector<unsigned char>& signal_filt,const std::vector<unsigned char> &signal );
+  void filterIRSensor(std::vector<unsigned char>& signal_filt,const std::vector<unsigned char> &signal );
+  void generateDebugMessage(const ecl::Pose2D<double>& pose_update, const std::vector<unsigned char>& signal_filt, const unsigned char &bumpe, const unsigned char &charger);
 
 private:
   bool is_enabled, can_run;
