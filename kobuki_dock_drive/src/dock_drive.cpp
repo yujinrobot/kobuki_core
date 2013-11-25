@@ -103,6 +103,7 @@ void DockDrive::update(const std::vector<unsigned char> &signal
 
   ecl::Pose2D<double> pose_update;
   std::vector<unsigned char> signal_filt(signal.size(), 0);
+  std::string debug_str;
 
   /*************************
    * pre processing
@@ -112,12 +113,12 @@ void DockDrive::update(const std::vector<unsigned char> &signal
 
   if(isEnabled()) {
     // state transition 
-    updateVelocity(signal_filt, bumper, charger, pose_update);
+    updateVelocity(signal_filt, bumper, charger, pose_update, debug_str);
     velocityCommands(vx, wz);
   }
 
   // for easy debugging
-  generateDebugMessage(signal_filt, bumper, charger, pose_update);
+  generateDebugMessage(signal_filt, bumper, charger, pose_update, debug_str);
 
 
   return;
@@ -183,7 +184,7 @@ std::string DockDrive::binary(unsigned char number) const {
 }
 
 
-void DockDrive::generateDebugMessage(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update)
+void DockDrive::generateDebugMessage(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update, const std::string& debug_str)
 {
   /*************************
    * debug prints
@@ -260,7 +261,7 @@ void DockDrive::generateDebugMessage(const std::vector<unsigned char>& signal_fi
  * @param pose_update
  *
  *************************/
-void DockDrive::updateVelocity(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update)
+void DockDrive::updateVelocity(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update, std::string& debug_str)
 {
 
   //std::string debug_str = "";
