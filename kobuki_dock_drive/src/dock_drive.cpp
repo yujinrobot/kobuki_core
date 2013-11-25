@@ -90,27 +90,18 @@ void DockDrive::modeShift(const std::string& mode)
  *
  * Really horrible - could do with an overhaul.
  *
- * @param ir signal
+ * @param dock_ir signal
  * @param bumper sensor
  * @param charger sensor
- * @param pose_update
+ * @param current pose
  */
 void DockDrive::update(const std::vector<unsigned char> &signal
                 , const unsigned char &bumper
                 , const unsigned char &charger
                 , const ecl::Pose2D<double> &pose) {
-  static ecl::Pose2D<double> pose_priv;
-  ecl::Pose2D<double> pose_update;
 
-  /*****************************
-   * compute pose update and pose update rate
-   *****************************/
-  double dx = pose.x() - pose_priv.x();
-  double dy = pose.y() - pose_priv.y();
-  pose_update.x( std::sqrt( dx*dx + dy*dy ) );
-  pose_update.heading( pose.heading() - pose_priv.heading() );
-  //std::cout << pose_diff << "=" << pose << "-" << pose_priv << " | " << pose_update << std::endl;
-  pose_priv = pose;
+  ecl::Pose2D<double> pose_update;
+  computePoseUpdate(pose_update, pose);
 
   /*************************
    * pre processing
@@ -323,6 +314,27 @@ void DockDrive::update(const std::vector<unsigned char> &signal
 //  this->vx = vx; this->wz = wz;
   return;
 }
+
+/**
+ * @brief compute pose update from previouse pose and current pose
+ *
+ * @param pose update. this variable get filled after this function 
+ * @param pose - current pose
+ **/
+void DockDrive::computePoseUpdate(ecl::Pose2D<double>& pose_update, const ecl::Pose2D<double& pose)
+{
+
+
+
+  double dx = pose.x() - pose_priv.x();
+  double dy = pose.y() - pose_priv.y();
+  pose_update.x( std::sqrt( dx*dx + dy*dy ) );
+  pose_update.heading( pose.heading() - pose_priv.heading() );
+  //std::cout << pose_diff << "=" << pose << "-" << pose_priv << " | " << pose_update << std::endl;
+  pose_priv = pose;
+
+}
+
 
 void DockDrive::velocityCommands(const double &vx_, const double &wz_) {
   // vx: in m/s
