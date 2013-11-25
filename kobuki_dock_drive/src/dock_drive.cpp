@@ -84,6 +84,17 @@ void DockDrive::modeShift(const std::string& mode)
   if (mode == "stop") can_run = false;
 }
 
+
+/**
+ * @brief Updates the odometry from firmware stamps and encoders.
+ *
+ * Really horrible - could do with an overhaul.
+ *
+ * @param ir signal
+ * @param bumper sensor
+ * @param charger sensor
+ * @param pose_update
+ */
 void DockDrive::update(const std::vector<unsigned char> &signal
                 , const unsigned char &bumper
                 , const unsigned char &charger
@@ -91,6 +102,9 @@ void DockDrive::update(const std::vector<unsigned char> &signal
   static ecl::Pose2D<double> pose_priv;
   ecl::Pose2D<double> pose_update;
 
+  /*****************************
+   * compute pose update and pose update rate
+   *****************************/
   double dx = pose.x() - pose_priv.x();
   double dy = pose.y() - pose_priv.y();
   pose_update.x( std::sqrt( dx*dx + dy*dy ) );
@@ -98,27 +112,6 @@ void DockDrive::update(const std::vector<unsigned char> &signal
   //std::cout << pose_diff << "=" << pose << "-" << pose_priv << " | " << pose_update << std::endl;
   pose_priv = pose;
 
-  ecl::linear_algebra::Vector3d pose_update_rates; //dummy
-  update( signal, bumper, charger, pose_update, pose_update_rates );
-}
-
-
-/**
- * @brief Updates the odometry from firmware stamps and encoders.
- *
- * Really horrible - could do with an overhaul.
- *
- * @param time_stamp
- * @param left_encoder
- * @param right_encoder
- * @param pose_update
- * @param pose_update_rates
- */
-void DockDrive::update(const std::vector<unsigned char> &signal
-                , const unsigned char &bumper
-                , const unsigned char &charger
-                , const ecl::Pose2D<double> &pose_update
-                , const ecl::linear_algebra::Vector3d &pose_update_rates) {
   /*************************
    * pre processing
    *************************/

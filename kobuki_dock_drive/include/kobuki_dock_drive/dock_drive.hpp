@@ -111,12 +111,6 @@ public:
                 , const unsigned char &charger
                 , const ecl::Pose2D<double> &pose);
 
-  void update(const std::vector<unsigned char> &signal /* dock_ir signal*/
-                , const unsigned char &bumper
-                , const unsigned char &charger
-                , const ecl::Pose2D<double> &pose_update
-                , const ecl::linear_algebra::Vector3d &pose_update_rates);
-
   void velocityCommands(const double &vx, const double &wz);
 
   /*********************
