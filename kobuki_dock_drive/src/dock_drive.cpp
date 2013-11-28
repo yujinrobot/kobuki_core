@@ -1,30 +1,30 @@
 /*
- * Copyright (c) 2012, Yujin Robot.
- * All rights reserved.
+ * copyright (c) 2012, yujin robot.
+ * all rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without
+ * redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- *     * Redistributions of source code must retain the above copyright
+ *     * redistributions of source code must retain the above copyright
  *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
+ *     * redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of Yujin Robot nor the names of its
+ *     * neither the name of yujin robot nor the names of its
  *       contributors may be used to endorse or promote products derived from
  *       this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
+ * this software is provided by the copyright holders and contributors "as is"
+ * and any express or implied warranties, including, but not limited to, the
+ * implied warranties of merchantability and fitness for a particular purpose
+ * are disclaimed. in no event shall the copyright owner or contributors be
+ * liable for any direct, indirect, incidental, special, exemplary, or
+ * consequential damages (including, but not limited to, procurement of
+ * substitute goods or services; loss of use, data, or profits; or business
+ * interruption) however caused and on any theory of liability, whether in
+ * contract, strict liability, or tort (including negligence or otherwise)
+ * arising in any way out of the use of this software, even if advised of the
+ * possibility of such damage.
  */
 /**
  * @file /kobuki_driver/src/driver/dock_drive.cpp
@@ -32,13 +32,13 @@
  **/
 
 /*****************************************************************************
-** Includes
+** includes
 *****************************************************************************/
 
 #include "kobuki_dock_drive/dock_drive.hpp"
 
 /*****************************************************************************
-** Defines
+** defines
 *****************************************************************************/
 
 #define sign(x) (x>0?+1:x<0?-1:0)
@@ -57,7 +57,7 @@ namespace kobuki {
 *****************************************************************************/
 DockDrive::DockDrive() :
   is_enabled(false), can_run(false) 
-  , state(IDLE), state_str("IDLE")
+  , state(RobotDockingState::IDLE), state_str("IDLE")
   , vx(0.0), wz(0.0)
   , bump_remainder(0)
   , dock_stabilizer(0)
@@ -111,16 +111,18 @@ void DockDrive::update(const std::vector<unsigned char> &signal
   computePoseUpdate(pose_update, pose);
   filterIRSensor(signal_filt, signal);
 
+  // 1. determine the location of robot
+  state = determineRobotLocation(signal_filt, charger);
+
+  // 2. decide the robot's behavior
+  // 3. publish velocity
   // state transition 
   updateVelocity(signal_filt, bumper, charger, pose_update, debug_str);
 
-  if(isEnabled()) {
-    velocityCommands(vx, wz);
-  }
+  velocityCommands(vx, wz);
 
   // for easy debugging
   generateDebugMessage(signal_filt, bumper, charger, pose_update, debug_str);
-
 
   return;
 }
@@ -209,12 +211,12 @@ void DockDrive::generateDebugMessage(const std::vector<unsigned char>& signal_fi
   std::string far_signal  = "[F: "; //far field
   std::string near_signal = "[N: "; //near field
   for (unsigned int i=0; i<3; i++) {
-    if (signal_filt[2-i]&FAR_LEFT   ) far_signal  += "L"; else far_signal  += "-";
-    if (signal_filt[2-i]&FAR_CENTER ) far_signal  += "C"; else far_signal  += "-";
-    if (signal_filt[2-i]&FAR_RIGHT  ) far_signal  += "R"; else far_signal  += "-";
-    if (signal_filt[2-i]&NEAR_LEFT  ) near_signal += "L"; else near_signal += "-";
-    if (signal_filt[2-i]&NEAR_CENTER) near_signal += "C"; else near_signal += "-";
-    if (signal_filt[2-i]&NEAR_RIGHT ) near_signal += "R"; else near_signal += "-";
+    if (signal_filt[2-i]&DockStationIRState::FAR_LEFT   ) far_signal  += "L"; else far_signal  += "-";
+    if (signal_filt[2-i]&DockStationIRState::FAR_CENTER ) far_signal  += "C"; else far_signal  += "-";
+    if (signal_filt[2-i]&DockStationIRState::FAR_RIGHT  ) far_signal  += "R"; else far_signal  += "-";
+    if (signal_filt[2-i]&DockStationIRState::NEAR_LEFT  ) near_signal += "L"; else near_signal += "-";
+    if (signal_filt[2-i]&DockStationIRState::NEAR_CENTER) near_signal += "C"; else near_signal += "-";
+    if (signal_filt[2-i]&DockStationIRState::NEAR_RIGHT ) near_signal += "R"; else near_signal += "-";
     far_signal  += " ";
     near_signal += " ";
   }
@@ -252,6 +254,99 @@ void DockDrive::generateDebugMessage(const std::vector<unsigned char>& signal_fi
   //std::cout << debug_output << std::endl;;
 }
 
+void DockDrive::updateVelocity(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update, std::string& debug_str)
+{
+  std::ostringstream oss;
+  DockStationIRState::State current_state;
+
+  // determine the current state based on ir and the previous state
+ // current_state = determineState(signal_filt, state);
+  /*
+  
+  switch((unsigned int)current_state) {
+    case DockStationIRState::NEAR_CENTER:
+      //nearCenter();
+      break;
+    case DockStationIRState::FAR_CENTER:
+      farCenter();
+    case DockStationIRState::NEAR_LEFT:
+      nearLeft();
+    case DockStationIRState::FAR_LEFT:
+      farLeft();
+    case DockStationIRState::NEAR_RIGHT:
+      nearRight();
+    case DockStationIRState::FAR_RIGHT:
+      farRight();
+    default:
+      oss << "Wrong state : " << state;
+      break;
+  }
+  debug_str = oss.str();
+  */
+}
+
+RobotDockingState::State DockDrive::determineRobotLocation(const std::vector<unsigned char>& signal_filt, const unsigned char& charger)
+{
+  // IR 
+  /*
+     R - signal_filt[0] 
+     C - signal_filt[1]
+     L - signal_filt[2]
+
+     values - DockStationIRState   
+
+     Determine among
+      NEAR_LEFT, NEAR_CENTER, NEAR_RIGHT
+      FAR_LEFT, FAR_CENTER, FAR_RIGHT
+   */                                      
+  DockStationIRState::State current_state;
+
+  unsigned int robot_left = signal_filt[2];
+  unsigned int robot_mid = signal_filt[1];
+  unsigned int robot_right = signal_filt[0];
+
+  unsigned int dock_signal_array[6][2] = 
+                { { DockStationIRState::NEAR_CENTER, RobotDockingState::NEAR_CENTER},
+                  { DockStationIRState::FAR_CENTER, RobotDockingState::FAR_CENTER},
+                  { DockStationIRState::NEAR_LEFT, RobotDockingState::NEAR_LEFT},
+                  { DockStationIRState::FAR_LEFT, RobotDockingState::FAR_LEFT},
+                  { DockStationIRState::NEAR_RIGHT, RobotDockingState::NEAR_RIGHT},
+                  { DockStationIRState::FAR_RIGHT, RobotDockingState::FAR_RIGHT}
+                };
+
+  // Check if robot is in charge
+  if(charger) {
+    return RobotDockingState::IN_DOCK;
+  }
+
+  for(unsigned int i = 0; i < 6; i++) {
+    if(validateSignal(signal_filt, dock_signal_array[i][0])) 
+    {
+      return (RobotDockingState::State)dock_signal_array[i][1];
+    }
+  }
+  return RobotDockingState::ERROR;
+}
+
+/*************************
+ * @breif Check if any ir sees the given state signal from dock station 
+ * 
+ * @param filtered signal 
+ * @param dock ir state
+ *
+ * @ret true or false
+ *************************/
+
+bool DockDrive::validateSignal(const std::vector<unsigned char>& signal_filt, const unsigned int state)
+{
+  unsigned int i;
+  for(i = 0; i < signal_filt.size(); i++)
+  {
+    if(signal_filt[i] & state)
+      return true;
+  }
+  return false;
+}
 
 /*************************
  * @breif processing. algorithms; transforma to velocity command
@@ -262,6 +357,7 @@ void DockDrive::generateDebugMessage(const std::vector<unsigned char>& signal_fi
  * @param pose_update
  *
  *************************/
+/*
 void DockDrive::updateVelocity(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update, std::string& debug_str)
 {
 
@@ -385,5 +481,5 @@ void DockDrive::updateVelocity(const std::vector<unsigned char>& signal_filt, co
     setStateVel(UNKNOWN, 0.00, 0.00); break;
   } while(0);
 }
-
+*/
 } // kobuki namespace
