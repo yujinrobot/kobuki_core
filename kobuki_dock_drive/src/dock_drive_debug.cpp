@@ -38,14 +38,16 @@
 #include "kobuki_dock_drive/dock_drive.hpp"
 
 namespace kobuki {
+/*************************
+ * debug prints
+ *************************/
 
 void DockDrive::generateDebugMessage(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update, const std::string& debug_str)
 {
-  /*************************
-   * debug prints
-   *************************/
+  
   std::ostringstream debug_stream;
   // pose_update and pose_update_rates for debugging
+  /*
   debug_stream << std::fixed << std::setprecision(4)
     << "[x: "    << std::setw(7) << pose_update.x()
     << ", y: "  << std::setw(7) << pose_update.y()
@@ -53,13 +55,12 @@ void DockDrive::generateDebugMessage(const std::vector<unsigned char>& signal_fi
     << "]";
 
   //dock_ir signal
-  /*
   debug_stream 
     << "[l: "  << binary(signal_filt[2])
     << ", c: " << binary(signal_filt[1])
     << ", r: " << binary(signal_filt[0])
     << "]";
-  */
+*/
   std::string far_signal  = "[F: "; //far field
   std::string near_signal = "[N: "; //near field
   for (unsigned int i=0; i<3; i++) {

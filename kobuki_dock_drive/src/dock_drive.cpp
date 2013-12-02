@@ -109,7 +109,7 @@ void DockDrive::setVel(double v, double w)
 
 void DockDrive::modeShift(const std::string& mode)
 {
-  if (mode == "enable")  { is_enabled = true;  can_run = true; }
+  if (mode == "enable")  { is_enabled = true;  can_run = true; state = RobotDockingState::IDLE;}
   if (mode == "disable") { is_enabled = false; can_run = false; }
   if (mode == "run")  can_run = true;
   if (mode == "stop") can_run = false;
@@ -240,7 +240,7 @@ void DockDrive::updateVelocity(const std::vector<unsigned char>& signal_filt, co
   // determine the current state based on ir and the previous state
   // common transition. idle -> scan -> find_stream -> get_stream -> scan -> aligned_far -> aligned_near -> docked_in -> done
 
-  current_state = state;
+  current_state = new_state = state;
   switch((unsigned int)current_state) {
     case RobotDockingState::IDLE:
       idle(new_state, new_vx, new_vy);
@@ -267,7 +267,11 @@ void DockDrive::updateVelocity(const std::vector<unsigned char>& signal_filt, co
 
   setStateVel(new_state, new_vx, new_vy);
   state_str = ROBOT_STATE_STR[new_state];
-
+  /*
+  std::ostringstream os;
+  os << new_state;
+  state_str = os.str(); 
+  */
 }
 
 /*************************
