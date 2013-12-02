@@ -42,83 +42,240 @@
 *****************************************************************************/
 
 namespace kobuki {
-
-  void DockDrive::nearCenter(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update)
-  {
-    unsigned int right = signal_filt[0];
-    unsigned int mid  = signal_filt[1];
-    unsigned int left = signal_filt[2];
-    // if mid ir sees center signal
-    if(mid & DockStationIRState::NEAR_CENTER) setVel(0.05, 0.0);
-    // if left ir sees center signal 
-    if(left & DockStationIRState::NEAR_CENTER) setVel(0.0, 0.1);
-    // if right ir sees center signal
-    if(right & DockStationIRState::NEAR_CENTER) setVel(0.0, -0.1);
+  /*********************************************************
+   * Shared variables among states
+    @ dock_detector : records + or - when middle IR sensor detects docking signal
+    @ rotated : records how much the robot has rotated in scan state 
+   *********************************************************/    
+  void DockDrive::idle(RobotDockingState::State& nstate,double& nvx, double& nwz) {
+    nstate = RobotDockingState::SCAN;
+    nvx = 0;
+    nwz = 0.66;
   }
 
-  void DockDrive::farCenter(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update)
-  {
-    unsigned int right = signal_filt[0];
-    unsigned int mid  = signal_filt[1];
-    unsigned int left = signal_filt[2];
-    // if mid ir sees center signal
-    if(mid & DockStationIRState::FAR_CENTER) setVel(0.1, 0.0);
-    // if left ir sees center signal 
-    if(left & DockStationIRState::FAR_CENTER) setVel(0.0, 0.3);
-    // if right ir sees center signal
-    if(right & DockStationIRState::FAR_CENTER) setVel(0.0, -0.3);
+  /********************************************************
+   * Scan
+   *  While it rotates ccw, determines the dock location with only middle sensor.
+   *  If its middle sensor detects center ir, the robot is aligned with docking station
+   *
+   *  It sets dock_detector value
+   *
+   ********************************************************/
+  void DockDrive::scan(RobotDockingState::State& nstate,double& nvx, double& nwz, const std::vector<unsigned char>& signal_filt, const ecl::Pose2D<double>& pose_update, std::string& debug_str) {
+    unsigned char right = signal_filt[0];
+    unsigned char mid   = signal_filt[1];
+    unsigned char left  = signal_filt[2];
+
+    RobotDockingState::State next_state;
+    double next_vx;
+    double next_wz;
+
+    rotated += pose_update.heading() / (2.0 * M_PI);
+    std::ostringstream oss;
+    oss << "rotated: " << std::fixed << std::setprecision(2) << std::setw(4) << rotated;
+    debug_str = oss.str();
+    
+    if(std::abs(rotated) > 1.6) 
+    {
+      next_state = RobotDockingState::FIND_STREAM;
+      next_vx = 0;
+      next_wz = 0;
+    }
+    // robot is located left side of dock
+    else if(mid & (DockStationIRState::FAR_LEFT + DockStationIRState::NEAR_LEFT)) 
+    {
+      dock_detector--; 
+    }
+    // robot is located right side of dock
+    else if(mid & (DockStationIRState::FAR_RIGHT + DockStationIRState::NEAR_RIGHT))
+    {
+      dock_detector++;
+    } 
+    // robot is located in front of robot 
+    else if(mid & (DockStationIRState::FAR_CENTER + DockStationIRState::NEAR_CENTER))
+    {
+      next_state = RobotDockingState::ALIGNED;
+      next_vx = 0.05;
+      next_wz = 0.0;
+    }
+    else if(mid) { // if mid sensor sees something, rotate slowly
+      next_state = RobotDockingState::SCAN;
+      next_vx = 0.0;
+      next_wz = 0.10;
+    }
+    else { // if mid sensor does not see anything, rotate fast
+      next_state = RobotDockingState::SCAN;
+      next_vx = 0.0;
+      next_wz = 0.66;
+    }
+
+    nstate = next_state;
+    nvx = next_vx; 
+    nwz = next_wz;
   }
 
-  void DockDrive::nearLeft(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update)
-  {
-    unsigned int right = signal_filt[0];
-    unsigned int mid  = signal_filt[1];
-    unsigned int left = signal_filt[2];
-    // if mid ir sees center signal
-    if(mid & DockStationIRState::NEAR_LEFT) setVel(0.0, 0.3);
-    // if left ir sees center signal 
-    if(left & DockStationIRState::NEAR_LEFT) setVel(0.0, 0.3);
-    // if right ir sees center signal
-    if(right & DockStationIRState::NEAR_LEFT) setVel(0.05, 0);
+  /********************************************************
+   * Find stream
+   *  based on dock_detector variable, it determines the dock's location and rotates toward the center of dock 
+   *
+   ********************************************************/
+  void DockDrive::find_stream(RobotDockingState::State& nstate,double& nvx, double& nwz, const std::vector<unsigned char>& signal_filt) {
+    unsigned char right = signal_filt[0];
+    unsigned char mid   = signal_filt[1];
+    unsigned char left  = signal_filt[2];
+    RobotDockingState::State next_state;
+    double next_vx;
+    double next_wz;
+
+    if(dock_detector > 0) // robot is located in right side of dock 
+    {
+      // turn right, CW until get right signal from left sensor
+      if(left & (DockStationIRState::FAR_RIGHT + DockStationIRState::NEAR_RIGHT)) {
+        next_state = RobotDockingState::GET_STREAM;
+        next_vx = 0.5;
+        next_wz = 0.0;
+      }
+      else {
+        next_state = RobotDockingState::FIND_STREAM;
+        next_vx = 0.0;
+        next_wz = -0.33;
+      }
+    }
+    else if(dock_detector < 0 ) // robot is located in left side of dock
+    {
+      // turn left, CCW until get left signal from right sensor
+      if(right & (DockStationIRState::FAR_LEFT + DockStationIRState::NEAR_LEFT))
+      {
+        next_state = RobotDockingState::GET_STREAM;
+        next_vx = 0.5;
+        next_wz = 0.0;                                   
+      }
+      else {
+        next_state = RobotDockingState::FIND_STREAM;
+        next_vx = 0.0;
+        next_wz = 0.33;
+      }
+    }
+
+    nstate = next_state;
+    nvx = next_vx;
+    nwz = next_wz;
   }
 
-  void DockDrive::farLeft(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update)
+ /********************************************************
+  * Get stream
+  *
+  *   It is heading the center line of dock and approaching. When it passes the center, it rotates toward the dock 
+  *
+  ********************************************************/
+  void DockDrive::get_stream(RobotDockingState::State& nstate,double& nvx, double& nwz, const std::vector<unsigned char>& signal_filt) 
   {
-    unsigned int right = signal_filt[0];
-    unsigned int mid  = signal_filt[1];
-    unsigned int left = signal_filt[2];
-    // if mid ir sees center signal
-    if(mid & DockStationIRState::FAR_LEFT) setVel(0.0, 0.3);
-    // if left ir sees center signal 
-    if(left & DockStationIRState::FAR_LEFT) setVel(0.0, 0.3);
-    // if right ir sees center signal
-    if(right & DockStationIRState::FAR_LEFT) setVel(0.1, 0.0);
+    unsigned char right = signal_filt[0];
+    unsigned char mid   = signal_filt[1];
+    unsigned char left  = signal_filt[2];
+    RobotDockingState::State next_state;
+    double next_vx;
+    double next_wz;
+
+    if(dock_detector > 0) { // robot is located in right side of dock
+      if (left & (DockStationIRState::FAR_LEFT + DockStationIRState::NEAR_LEFT)) {
+        dock_detector =0;
+        rotated =0;
+        next_state = RobotDockingState::SCAN;
+        next_vx = 0;
+        next_wz = 0.1;
+      }
+      else {
+        next_state = RobotDockingState::GET_STREAM;
+        next_vx = 0.05;
+        next_wz = 0.0;
+      }
+    }
+    else if(dock_detector < 0) { // robot is located left side of dock
+      if(right & (DockStationIRState::FAR_RIGHT + DockStationIRState::NEAR_RIGHT)) {
+        dock_detector =0;
+        rotated =0;
+        next_state = RobotDockingState::SCAN;
+        next_vx = 0;
+        next_wz = 0.1;
+      }
+      else {
+        next_state = RobotDockingState::SCAN;
+        next_vx = 0;
+        next_wz = 0.1;
+      }
+    }
+
+    nstate = next_state;
+    nvx = next_vx;
+    nwz = next_wz;
   }
 
-  void DockDrive::nearRight(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update)
+  void DockDrive::aligned(RobotDockingState::State& nstate,double& nvx, double& nwz, const std::vector<unsigned char>& signal_filt, std::string& debug_str) 
   {
-    unsigned int right = signal_filt[0];
-    unsigned int mid  = signal_filt[1];
-    unsigned int left = signal_filt[2];
-    // if mid ir sees center signal
-    if(mid & DockStationIRState::NEAR_RIGHT) setVel(0.0, -0.3);
-    // if left ir sees center signal 
-    if(left & DockStationIRState::NEAR_RIGHT) setVel(0.05, 0.0);
-    // if right ir sees center signal
-    if(right & DockStationIRState::NEAR_RIGHT) setVel(0.0, -0.5);
-  }
+    unsigned char right = signal_filt[0];
+    unsigned char mid   = signal_filt[1];
+    unsigned char left  = signal_filt[2];
+    RobotDockingState::State next_state;
+    double next_vx;
+    double next_wz;
 
-  void DockDrive::farRight(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update)
-  {
-    unsigned int right = signal_filt[0];
-    unsigned int mid  = signal_filt[1];
-    unsigned int left = signal_filt[2];
-    // if mid ir sees center signal
-    if(mid & DockStationIRState::FAR_RIGHT) setVel(0.0, -0.3);
-    // if left ir sees center signal 
-    if(left & DockStationIRState::FAR_RIGHT) setVel(0.05, 0.0);
-    // if right ir sees center signal
-    if(right & DockStationIRState::FAR_RIGHT) setVel(0.0, -0.5);
-  }
+    if(mid) 
+    {
+      if(((mid & DockStationIRState::NEAR) == DockStationIRState::NEAR_CENTER) || ( mid & DockStationIRState::NEAR))
+      {
+        debug_str = "AlignedNearCenter";
+        next_state = RobotDockingState::ALIGNED_NEAR;
+        next_vx = 0.05;
+        next_wz = 0.0;
+      }
+      else if(mid & DockStationIRState::NEAR_LEFT) {
+        debug_str = "AlignedNearLeft";
+        next_state = RobotDockingState::ALIGNED_NEAR;
+        next_vx = 0.05;
+        next_wz = 0.1;
+      }
+      else if(mid & DockStationIRState::NEAR_LEFT) {
+        debug_str = "AlignedNearRight";
+        next_state = RobotDockingState::ALIGNED_NEAR;
+        next_vx = 0.05;
+        next_wz = -0.1;
+      }
+      else if(((mid & DockStationIRState::FAR) == DockStationIRState::FAR_CENTER) || ( mid & DockStationIRState::FAR)) {
+        debug_str = "AlignedFarCenter";
+        next_state = RobotDockingState::ALIGNED_FAR;
+        next_vx = 0.1;
+        next_wz = 0.0;
+      }
+      else if(mid & DockStationIRState::FAR_LEFT) {
+        debug_str = "AlignedFarLeft";
+        next_state = RobotDockingState::ALIGNED_FAR;
+        next_vx = 0.1;
+        next_wz = 0.3;
+      }
+      else if(mid & DockStationIRState::FAR_RIGHT) {
+        debug_str = "AlignedFarRight";
+        next_state = RobotDockingState::ALIGNED_FAR;
+        next_vx = 0.1;
+        next_wz = -0.3;
+      }
+      else {
+        dock_detector = 0;
+        rotated = 0.0;
+        next_state = RobotDockingState::SCAN;
+        next_vx = 0.0;
+        next_wz = 0.66;
+      }
+    }
+    else {
+      debug_str = "Lost Signals";
+      next_state = RobotDockingState::LOST;
+      next_vx = 0.0;
+      next_wz = 0.0;
+    }
 
+    nstate = next_state;
+    nvx = next_vx;
+    nwz = next_wz;
+  }
 } 

@@ -1,5 +1,5 @@
 /*
- * copyright (c) 2012, yujin robot.
+ * copyright (c) 2013, yujin robot.
  * all rights reserved.
  *
  * redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@
 
 #define sign(x) (x>0?+1:x<0?-1:0)
 #define stringfy(x) #x
-#define setState(x) {state=x;state_str=stringfy(x);}
+#define setState(x) {state=x;}
 #define setStateVel(x,v,w) {setState(x);setVel(v,w);}
 
 /*****************************************************************************
@@ -66,7 +66,37 @@ DockDrive::DockDrive() :
   , min_abs_v(0.01)
   , min_abs_w(0.1)
   , signal_window(20)
+  , ROBOT_STATE_STR(13)
 {
+
+  ROBOT_STATE_STR[0] = "IDLE";
+  ROBOT_STATE_STR[1] = "DONE";
+  ROBOT_STATE_STR[2] = "DOCKED_IN";
+  ROBOT_STATE_STR[3] = "BUMPED_DOCK";
+  ROBOT_STATE_STR[4] = "BUMPED";
+  ROBOT_STATE_STR[5] = "SCAN";
+  ROBOT_STATE_STR[6] = "FIND_STREAM";
+  ROBOT_STATE_STR[7] = "GET_STREAM";
+  ROBOT_STATE_STR[8] = "ALIGNED";
+  ROBOT_STATE_STR[9] = "ALIGNED_FAR";
+  ROBOT_STATE_STR[10] = "ALIGNED_NEAR";
+  ROBOT_STATE_STR[11] = "UNKNOWN";
+  ROBOT_STATE_STR[12] = "LOST";
+  /*
+    "DONE",
+    "DOCKED_IN",
+    "BUMPED_DOCK",
+    "BUMPED",
+    "SCAN",
+    "FIND_STREAM",
+    "GET_STREAM",
+    "ALIGNED",
+    "ALIGNED_FAR",
+    "ALIGNED_NEAR",
+    "UNKNOWN",
+    "LOST"};
+*/
+
 }
 
 DockDrive::~DockDrive(){;}
@@ -105,19 +135,19 @@ void DockDrive::update(const std::vector<unsigned char> &signal
   std::vector<unsigned char> signal_filt(signal.size(), 0);
   std::string debug_str;
 
-  /*************************
-   * pre processing
-   *************************/
-  computePoseUpdate(pose_update, pose);
-  filterIRSensor(signal_filt, signal);
-
-  // 1. determine the location of robot
-//  state = determineRobotLocation(signal_filt, charger);
-
-  // 2. decide the robot's behavior
-  // 3. publish velocity
-  // state transition 
-  updateVelocity(signal_filt, bumper, charger, pose_update, debug_str);
+  // process bumper and charger event first
+  // docking algorithm terminates here 
+  if(bumper || charger) {
+    processBumpChargeEvent(bumper, charger);
+  }
+  else {
+    /*************************
+     * pre processing
+     *************************/
+    computePoseUpdate(pose_update, pose);
+    filterIRSensor(signal_filt, signal);
+    updateVelocity(signal_filt, pose_update, debug_str);
+  }
 
   velocityCommands(vx, wz);
 
@@ -176,168 +206,68 @@ void DockDrive::velocityCommands(const double &vx_, const double &wz_) {
   wz = wz_;
 }
 
-std::string DockDrive::binary(unsigned char number) const {
-  std::string ret;
-  for( unsigned int i=0;i<6; i++){
-    if (number&1) ret = "1" + ret;
-    else          ret = "0" + ret;
-    number = number >> 1;
+void DockDrive::processBumpChargeEvent(const unsigned char& bumper, const unsigned char& charger) {
+  if(charger && bumper) {
+    setStateVel(RobotDockingState::BUMPED_DOCK, -0.01, 0.0); 
   }
-  return ret;
-}
-
-
-void DockDrive::generateDebugMessage(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update, const std::string& debug_str)
-{
-  /*************************
-   * debug prints
-   *************************/
-  std::ostringstream debug_stream;
-  // pose_update and pose_update_rates for debugging
-  debug_stream << std::fixed << std::setprecision(4)
-    << "[x: "    << std::setw(7) << pose_update.x()
-    << ", y: "  << std::setw(7) << pose_update.y()
-    << ", th: " << std::setw(7) << pose_update.heading()
-    << "]";
-
-  //dock_ir signal
-  /*
-  debug_stream 
-    << "[l: "  << binary(signal_filt[2])
-    << ", c: " << binary(signal_filt[1])
-    << ", r: " << binary(signal_filt[0])
-    << "]";
-  */
-  std::string far_signal  = "[F: "; //far field
-  std::string near_signal = "[N: "; //near field
-  for (unsigned int i=0; i<3; i++) {
-    if (signal_filt[2-i]&DockStationIRState::FAR_LEFT   ) far_signal  += "L"; else far_signal  += "-";
-    if (signal_filt[2-i]&DockStationIRState::FAR_CENTER ) far_signal  += "C"; else far_signal  += "-";
-    if (signal_filt[2-i]&DockStationIRState::FAR_RIGHT  ) far_signal  += "R"; else far_signal  += "-";
-    if (signal_filt[2-i]&DockStationIRState::NEAR_LEFT  ) near_signal += "L"; else near_signal += "-";
-    if (signal_filt[2-i]&DockStationIRState::NEAR_CENTER) near_signal += "C"; else near_signal += "-";
-    if (signal_filt[2-i]&DockStationIRState::NEAR_RIGHT ) near_signal += "R"; else near_signal += "-";
-    far_signal  += " ";
-    near_signal += " ";
-  }
-  far_signal  += "]";
-  near_signal += "]";
-  debug_stream << far_signal << near_signal;
-
-  //bumper
-  {
-  std::string out = "[B: ";
-  if (bumper&4) out += "L"; else out += "-";
-  if (bumper&2) out += "C"; else out += "-";
-  if (bumper&1) out += "R"; else out += "-";
-  out += "]";
-  debug_stream << out;
-  }
-
-  //charger
-  {
-  std::ostringstream oss;
-  oss << "[C:" << std::setw(2) << (unsigned int)charger;
-  oss << "(";
-  if (charger) oss << "ON"; else oss << "  ";
-  oss << ")]";
-  debug_stream << oss.str();
-  }
-
-  //debug_stream << std::fixed << std::setprecision(4)
-  debug_stream << "[vx: " << std::setw(7) << vx << ", wz: " << std::setw(7) << wz << "]";
-  debug_stream << "[S: " << state_str << "]";
-  debug_stream << "[" << debug_str << "]";
-  //debug_stream << std::endl;
-  debug_output = debug_stream.str();
-
-  //std::cout << debug_output << std::endl;;
-}
-
-/*void DockDrive::updateVelocity(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update, std::string& debug_str)
-{
-  std::ostringstream oss;
-
-  // determine the current state based on ir and the previous state
-  switch((unsigned int)state) {
-    case RobotDockingState::IN_DOCK:
-      oss << "In dock. Mark it as done";
-      state = RobotDockingState::DONE;
-      break;
-    case RobotDockingState::NEAR_CENTER:
-      oss << "Near Center";
-      nearCenter(signal_filt, bumper, charger, pose_update);
-      break;
-    case RobotDockingState::FAR_CENTER:
-      oss << "Far Center";
-      farCenter(signal_filt, bumper, charger, pose_update);
-      break;
-    case RobotDockingState::NEAR_LEFT:
-      oss << "Near Left";
-      nearLeft(signal_filt, bumper, charger, pose_update);
-      break;
-    case RobotDockingState::FAR_LEFT:
-      oss << "Far Left";
-      farLeft(signal_filt, bumper, charger, pose_update);
-      break;
-    case RobotDockingState::NEAR_RIGHT:
-      oss << "Near Right";
-      nearRight(signal_filt, bumper, charger, pose_update);
-      break;
-    case RobotDockingState::FAR_RIGHT:
-      oss << "Far Right";
-      farRight(signal_filt, bumper, charger, pose_update);
-      break;
-    default:
-      oss << "Wrong state : " << state;
-      break;
-  }
-  debug_str = oss.str();
-}
-*/
-RobotDockingState::State DockDrive::determineRobotLocation(const std::vector<unsigned char>& signal_filt, const unsigned char& charger)
-{
-  // IR 
-  /*
-     R - signal_filt[0] 
-     C - signal_filt[1]
-     L - signal_filt[2]
-
-     values - DockStationIRState   
-
-     Determine among
-      NEAR_LEFT, NEAR_CENTER, NEAR_RIGHT
-      FAR_LEFT, FAR_CENTER, FAR_RIGHT
-   */                                      
-  /*
-  DockStationIRState::State current_state;
-
-  unsigned int robot_left = signal_filt[2];
-  unsigned int robot_mid = signal_filt[1];
-  unsigned int robot_right = signal_filt[0];
-
-  unsigned int dock_signal_array[6][2] = 
-                { { DockStationIRState::NEAR_CENTER, RobotDockingState::NEAR_CENTER},
-                  { DockStationIRState::FAR_CENTER, RobotDockingState::FAR_CENTER},
-                  { DockStationIRState::NEAR_LEFT, RobotDockingState::NEAR_LEFT},
-                  { DockStationIRState::FAR_LEFT, RobotDockingState::FAR_LEFT},
-                  { DockStationIRState::NEAR_RIGHT, RobotDockingState::NEAR_RIGHT},
-                  { DockStationIRState::FAR_RIGHT, RobotDockingState::FAR_RIGHT}
-                };
-
-  // Check if robot is in charge
-  if(charger) {
-    return RobotDockingState::IN_DOCK;
-  }
-
-  for(unsigned int i = 0; i < 6; i++) {
-    if(validateSignal(signal_filt, dock_signal_array[i][0])) 
-    {
-      return (RobotDockingState::State)dock_signal_array[i][1];
-      
+  else if(charger) {
+    if(dock_stabilizer == 0) {
+      setStateVel(RobotDockingState::DOCKED_IN, 0.0, 0.0); 
+    }
+    else if(dock_stabilizer > 20) {
+      dock_stabilizer = 0;
+      is_enabled = false;
+      can_run = false;
+      setStateVel(RobotDockingState::IDLE, 0.0, 0.0);
+    }
+    else {
+      dock_stabilizer++;
+      setStateVel(RobotDockingState::DOCKED_IN, 0.0, 0.0); 
     }
   }
-  return RobotDockingState::ERROR;*/
+  else if(bumper) {
+    setStateVel(RobotDockingState::BUMPED, -0.05, 0.0);
+  }
+}
+
+void DockDrive::updateVelocity(const std::vector<unsigned char>& signal_filt, const ecl::Pose2D<double>& pose_update, std::string& debug_str)
+{
+  std::ostringstream oss;
+  RobotDockingState::State current_state, new_state;
+  double new_vx = 0.0;
+  double new_vy = 0.0;
+
+  // determine the current state based on ir and the previous state
+  // common transition. idle -> scan -> find_stream -> get_stream -> scan -> aligned_far -> aligned_near -> docked_in -> done
+
+  current_state = state;
+  switch((unsigned int)current_state) {
+    case RobotDockingState::IDLE:
+      idle(new_state, new_vx, new_vy);
+      break;
+    case RobotDockingState::SCAN:
+      scan(new_state, new_vx, new_vy, signal_filt, pose_update, debug_str);
+      break;
+    case RobotDockingState::FIND_STREAM:
+      find_stream(new_state, new_vx, new_vy, signal_filt);
+      break;
+    case RobotDockingState::GET_STREAM:
+      get_stream(new_state, new_vx, new_vy, signal_filt);
+      break;
+    case RobotDockingState::ALIGNED:
+    case RobotDockingState::ALIGNED_FAR:
+    case RobotDockingState::ALIGNED_NEAR:
+      aligned(new_state, new_vx, new_vy, signal_filt, debug_str);
+      break;
+    default:
+      oss << "Wrong state : " << current_state;
+      debug_str = oss.str();
+      break;
+  }
+
+  setStateVel(new_state, new_vx, new_vy);
+  state_str = ROBOT_STATE_STR[new_state];
+
 }
 
 /*************************
@@ -348,7 +278,6 @@ RobotDockingState::State DockDrive::determineRobotLocation(const std::vector<uns
  *
  * @ret true or false
  *************************/
-
 bool DockDrive::validateSignal(const std::vector<unsigned char>& signal_filt, const unsigned int state)
 {
   unsigned int i;
@@ -369,6 +298,7 @@ bool DockDrive::validateSignal(const std::vector<unsigned char>& signal_filt, co
  * @param pose_update
  *
  *************************/
+/*
 void DockDrive::updateVelocity(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update, std::string& debug_str)
 {
 
@@ -491,5 +421,5 @@ void DockDrive::updateVelocity(const std::vector<unsigned char>& signal_filt, co
     }
     setStateVel(RobotDockingState::UNKNOWN, 0.00, 0.00); break;
   } while(0);
-}
+}*/
 } // kobuki namespace

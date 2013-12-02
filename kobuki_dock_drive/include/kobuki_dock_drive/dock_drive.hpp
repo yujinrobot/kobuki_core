@@ -110,20 +110,21 @@ public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 protected:
+  void processBumpChargeEvent(const unsigned char& bumper, const unsigned char& charger);
   void computePoseUpdate(ecl::Pose2D<double>& pose_update, const ecl::Pose2D<double>& pose);
   void filterIRSensor(std::vector<unsigned char>& signal_filt,const std::vector<unsigned char> &signal );
   void generateDebugMessage(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update, const std::string& debug_str);
-  void updateVelocity(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update, std::string& debug_str);
+  void updateVelocity(const std::vector<unsigned char>& signal_filt, const ecl::Pose2D<double>& pose_update, std::string& debug_str);
   RobotDockingState::State determineRobotLocation(const std::vector<unsigned char>& signal_filt,const unsigned char& charger);
   bool validateSignal(const std::vector<unsigned char>& signal_filt, const unsigned int state);
 
+
   // States
-  void nearCenter(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update);
-  void farCenter(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update);
-  void nearLeft(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update);
-  void farLeft(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update);
-  void nearRight(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update);
-  void farRight(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update);
+  void idle(RobotDockingState::State& state,double& vx, double& wz); 
+  void scan(RobotDockingState::State& state,double& vx, double& wz, const std::vector<unsigned char>& signal_filt, const ecl::Pose2D<double>& pose_update, std::string& debug_str);
+  void find_stream(RobotDockingState::State& state,double& vx, double& wz, const std::vector<unsigned char>& signal_filt);
+  void get_stream(RobotDockingState::State& state,double& vx, double& wz, const std::vector<unsigned char>& signal_filt);
+  void aligned(RobotDockingState::State& state,double& vx, double& wz, const std::vector<unsigned char>& signal_filt, std::string& debug_str);
 
 
 private:
@@ -147,6 +148,7 @@ private:
   std::string binary(unsigned char number) const;
 
   std::string debug_output;
+  std::vector<std::string> ROBOT_STATE_STR;
 };
 
 } // namespace kobuki

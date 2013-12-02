@@ -77,7 +77,9 @@ namespace kobuki {
       UNKNOWN,
       LOST
     };
+
   };
+
   /*
   struct RobotDockingState {
       enum State {
