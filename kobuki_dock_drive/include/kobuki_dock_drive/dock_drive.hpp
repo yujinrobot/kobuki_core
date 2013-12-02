@@ -118,8 +118,13 @@ protected:
   bool validateSignal(const std::vector<unsigned char>& signal_filt, const unsigned int state);
 
   // States
-  void done();
-  void dockedIn();
+  void nearCenter(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update);
+  void farCenter(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update);
+  void nearLeft(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update);
+  void farLeft(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update);
+  void nearRight(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update);
+  void farRight(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update);
+
 
 private:
   bool is_enabled, can_run;

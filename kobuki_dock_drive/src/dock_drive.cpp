@@ -246,7 +246,7 @@ void DockDrive::generateDebugMessage(const std::vector<unsigned char>& signal_fi
 
   //debug_stream << std::fixed << std::setprecision(4)
   debug_stream << "[vx: " << std::setw(7) << vx << ", wz: " << std::setw(7) << wz << "]";
-  debug_stream << "[S: " << state_str << "]";
+  debug_stream << "[S: " << state << "]";
   debug_stream << "[" << debug_str << "]";
   //debug_stream << std::endl;
   debug_output = debug_stream.str();
@@ -257,32 +257,42 @@ void DockDrive::generateDebugMessage(const std::vector<unsigned char>& signal_fi
 void DockDrive::updateVelocity(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update, std::string& debug_str)
 {
   std::ostringstream oss;
-  DockStationIRState::State current_state;
 
   // determine the current state based on ir and the previous state
- // current_state = determineState(signal_filt, state);
-  /*
-  
-  switch((unsigned int)current_state) {
-    case DockStationIRState::NEAR_CENTER:
-      //nearCenter();
+  switch((unsigned int)state) {
+    case RobotDockingState::IN_DOCK:
+      oss << "In dock. Mark it as done";
+      state = RobotDockingState::DONE;
       break;
-    case DockStationIRState::FAR_CENTER:
-      farCenter();
-    case DockStationIRState::NEAR_LEFT:
-      nearLeft();
-    case DockStationIRState::FAR_LEFT:
-      farLeft();
-    case DockStationIRState::NEAR_RIGHT:
-      nearRight();
-    case DockStationIRState::FAR_RIGHT:
-      farRight();
+    case RobotDockingState::NEAR_CENTER:
+      oss << "Near Center";
+      nearCenter(signal_filt, bumper, charger, pose_update);
+      break;
+    case RobotDockingState::FAR_CENTER:
+      oss << "Far Center";
+      farCenter(signal_filt, bumper, charger, pose_update);
+      break;
+    case RobotDockingState::NEAR_LEFT:
+      oss << "Near Left";
+      nearLeft(signal_filt, bumper, charger, pose_update);
+      break;
+    case RobotDockingState::FAR_LEFT:
+      oss << "Far Left";
+      farLeft(signal_filt, bumper, charger, pose_update);
+      break;
+    case RobotDockingState::NEAR_RIGHT:
+      oss << "Near Right";
+      nearRight(signal_filt, bumper, charger, pose_update);
+      break;
+    case RobotDockingState::FAR_RIGHT:
+      oss << "Far Right";
+      farRight(signal_filt, bumper, charger, pose_update);
+      break;
     default:
       oss << "Wrong state : " << state;
       break;
   }
   debug_str = oss.str();
-  */
 }
 
 RobotDockingState::State DockDrive::determineRobotLocation(const std::vector<unsigned char>& signal_filt, const unsigned char& charger)
@@ -323,6 +333,7 @@ RobotDockingState::State DockDrive::determineRobotLocation(const std::vector<uns
     if(validateSignal(signal_filt, dock_signal_array[i][0])) 
     {
       return (RobotDockingState::State)dock_signal_array[i][1];
+      
     }
   }
   return RobotDockingState::ERROR;

@@ -42,10 +42,83 @@
 *****************************************************************************/
 
 namespace kobuki {
-  void DockDrive::done() {
+
+  void DockDrive::nearCenter(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update)
+  {
+    unsigned int right = signal_filt[0];
+    unsigned int mid  = signal_filt[1];
+    unsigned int left = signal_filt[2];
+    // if mid ir sees center signal
+    if(mid & DockStationIRState::NEAR_CENTER) setVel(0.05, 0.0);
+    // if left ir sees center signal 
+    if(left & DockStationIRState::NEAR_CENTER) setVel(0.0, 0.1);
+    // if right ir sees center signal
+    if(right & DockStationIRState::NEAR_CENTER) setVel(0.0, -0.1);
   }
 
-  void DockDrive::dockedIn() {
+  void DockDrive::farCenter(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update)
+  {
+    unsigned int right = signal_filt[0];
+    unsigned int mid  = signal_filt[1];
+    unsigned int left = signal_filt[2];
+    // if mid ir sees center signal
+    if(mid & DockStationIRState::FAR_CENTER) setVel(0.1, 0.0);
+    // if left ir sees center signal 
+    if(left & DockStationIRState::FAR_CENTER) setVel(0.0, 0.3);
+    // if right ir sees center signal
+    if(right & DockStationIRState::FAR_CENTER) setVel(0.0, -0.3);
+  }
+
+  void DockDrive::nearLeft(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update)
+  {
+    unsigned int right = signal_filt[0];
+    unsigned int mid  = signal_filt[1];
+    unsigned int left = signal_filt[2];
+    // if mid ir sees center signal
+    if(mid & DockStationIRState::NEAR_LEFT) setVel(0.0, 0.3);
+    // if left ir sees center signal 
+    if(left & DockStationIRState::NEAR_LEFT) setVel(0.0, 0.3);
+    // if right ir sees center signal
+    if(right & DockStationIRState::NEAR_LEFT) setVel(0.05, 0);
+  }
+
+  void DockDrive::farLeft(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update)
+  {
+    unsigned int right = signal_filt[0];
+    unsigned int mid  = signal_filt[1];
+    unsigned int left = signal_filt[2];
+    // if mid ir sees center signal
+    if(mid & DockStationIRState::FAR_LEFT) setVel(0.0, 0.3);
+    // if left ir sees center signal 
+    if(left & DockStationIRState::FAR_LEFT) setVel(0.0, 0.3);
+    // if right ir sees center signal
+    if(right & DockStationIRState::FAR_LEFT) setVel(0.1, 0.0);
+  }
+
+  void DockDrive::nearRight(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update)
+  {
+    unsigned int right = signal_filt[0];
+    unsigned int mid  = signal_filt[1];
+    unsigned int left = signal_filt[2];
+    // if mid ir sees center signal
+    if(mid & DockStationIRState::NEAR_RIGHT) setVel(0.0, -0.3);
+    // if left ir sees center signal 
+    if(left & DockStationIRState::NEAR_RIGHT) setVel(0.05, 0.0);
+    // if right ir sees center signal
+    if(right & DockStationIRState::NEAR_RIGHT) setVel(0.0, -0.5);
+  }
+
+  void DockDrive::farRight(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update)
+  {
+    unsigned int right = signal_filt[0];
+    unsigned int mid  = signal_filt[1];
+    unsigned int left = signal_filt[2];
+    // if mid ir sees center signal
+    if(mid & DockStationIRState::FAR_RIGHT) setVel(0.0, -0.3);
+    // if left ir sees center signal 
+    if(left & DockStationIRState::FAR_RIGHT) setVel(0.05, 0.0);
+    // if right ir sees center signal
+    if(right & DockStationIRState::FAR_RIGHT) setVel(0.0, -0.5);
   }
 
 } 
