@@ -62,6 +62,24 @@ namespace kobuki {
 
   // the current robot states
   struct RobotDockingState {
+    enum State {
+      IDLE,
+      DONE,
+      DOCKED_IN,
+      BUMPED_DOCK,
+      BUMPED,
+      SCAN,
+      FIND_STREAM,
+      GET_STREAM,
+      ALIGNED,
+      ALIGNED_FAR,
+      ALIGNED_NEAR,
+      UNKNOWN,
+      LOST
+    };
+  };
+  /*
+  struct RobotDockingState {
       enum State {
         IDLE,
         NEAR_LEFT,
@@ -74,7 +92,7 @@ namespace kobuki {
         DONE,
         ERROR,
       };
-  };
+  };*/
 }
 
 #endif // KOBUKI_DOCK_DRIVE_STATE_HPP_ 
