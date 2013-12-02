@@ -112,7 +112,7 @@ void DockDrive::update(const std::vector<unsigned char> &signal
   filterIRSensor(signal_filt, signal);
 
   // 1. determine the location of robot
-  state = determineRobotLocation(signal_filt, charger);
+//  state = determineRobotLocation(signal_filt, charger);
 
   // 2. decide the robot's behavior
   // 3. publish velocity
@@ -254,14 +254,14 @@ void DockDrive::generateDebugMessage(const std::vector<unsigned char>& signal_fi
   //std::cout << debug_output << std::endl;;
 }
 
-void DockDrive::updateVelocity(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update, std::string& debug_str)
+/*void DockDrive::updateVelocity(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update, std::string& debug_str)
 {
   std::ostringstream oss;
   DockStationIRState::State current_state;
 
   // determine the current state based on ir and the previous state
  // current_state = determineState(signal_filt, state);
-  /*
+  
   
   switch((unsigned int)current_state) {
     case DockStationIRState::NEAR_CENTER:
@@ -282,9 +282,9 @@ void DockDrive::updateVelocity(const std::vector<unsigned char>& signal_filt, co
       break;
   }
   debug_str = oss.str();
-  */
+  
 }
-
+*/
 RobotDockingState::State DockDrive::determineRobotLocation(const std::vector<unsigned char>& signal_filt, const unsigned char& charger)
 {
   // IR 
@@ -299,6 +299,7 @@ RobotDockingState::State DockDrive::determineRobotLocation(const std::vector<uns
       NEAR_LEFT, NEAR_CENTER, NEAR_RIGHT
       FAR_LEFT, FAR_CENTER, FAR_RIGHT
    */                                      
+  /*
   DockStationIRState::State current_state;
 
   unsigned int robot_left = signal_filt[2];
@@ -325,7 +326,7 @@ RobotDockingState::State DockDrive::determineRobotLocation(const std::vector<uns
       return (RobotDockingState::State)dock_signal_array[i][1];
     }
   }
-  return RobotDockingState::ERROR;
+  return RobotDockingState::ERROR;*/
 }
 
 /*************************
@@ -357,129 +358,127 @@ bool DockDrive::validateSignal(const std::vector<unsigned char>& signal_filt, co
  * @param pose_update
  *
  *************************/
-/*
 void DockDrive::updateVelocity(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update, std::string& debug_str)
 {
 
   //std::string debug_str = "";
   do {  // a kind of hack
-    if ( state==DONE ) setState(IDLE); // when this function is called after final state 'DONE'.
-    if ( state==DOCKED_IN ) {
+    if ( state==RobotDockingState::DONE ) setState(RobotDockingState::IDLE); // when this function is called after final state 'DONE'.
+    if ( state==RobotDockingState::DOCKED_IN ) {
       if ( dock_stabilizer++ > 20 ) {
         is_enabled = false;
         can_run = false;
-        setStateVel(DONE, 0.0, 0.0); break;
+        setStateVel(RobotDockingState::DONE, 0.0, 0.0); break;
       }
-      setStateVel(DOCKED_IN, 0.0, 0.0); break;
+      setStateVel(RobotDockingState::DOCKED_IN, 0.0, 0.0); break;
     }
     if ( bump_remainder > 0 ) {
       bump_remainder--;
-      if ( charger ) { setStateVel(DOCKED_IN, 0.0, 0.0); break; } // when bumper signal is received early than charger(dock) signal.
-      else {           setStateVel(BUMPED_DOCK, -0.01, 0.0); break; }
-    } else if (state == BUMPED) {
-      setState(IDLE); //should I remember and recall previous state?
+      if ( charger ) { setStateVel(RobotDockingState::DOCKED_IN, 0.0, 0.0); break; } // when bumper signal is received early than charger(dock) signal.
+      else {           setStateVel(RobotDockingState::BUMPED_DOCK, -0.01, 0.0); break; }
+    } else if (state == RobotDockingState::BUMPED) {
+      setState(RobotDockingState::IDLE); //should I remember and recall previous state?
       debug_str="how dare!!";
     }
     if ( bumper || charger ) {
       if( bumper && charger ) {
         bump_remainder = 0;
-        setStateVel(BUMPED_DOCK, -0.01, 0.0); break;
+        setStateVel(RobotDockingState::BUMPED_DOCK, -0.01, 0.0); break;
       }
       if ( bumper ) {
         bump_remainder = 50;
-        setStateVel(BUMPED, -0.05, 0.0); break;
+        setStateVel(RobotDockingState::BUMPED, -0.05, 0.0); break;
       }
       if ( charger ) { // already docked in
         dock_stabilizer = 0;
-        setStateVel(DOCKED_IN, 0.0, 0.0); break;
+        setStateVel(RobotDockingState::DOCKED_IN, 0.0, 0.0); break;
       }
     } else {
-      if ( state==IDLE ) {
+      if ( state==RobotDockingState::IDLE ) {
         dock_detector = 0;
         rotated = 0.0;
-        setStateVel(SCAN, 0.00, 0.66); break;
+        setStateVel(RobotDockingState::SCAN, 0.00, 0.66); break;
       }
-      if ( state==SCAN ) {
+      if ( state==RobotDockingState::SCAN ) {
         rotated += pose_update.heading()/(2.0*M_PI);
         std::ostringstream oss;
         oss << "rotated: " << std::fixed << std::setprecision(2) << std::setw(4) << rotated;
         debug_str = oss.str();
         if( std::abs(rotated) > 1.6 ) {
-          setStateVel(FIND_STREAM, 0.0, 0.0); break;
+          setStateVel(RobotDockingState::FIND_STREAM, 0.0, 0.0); break;
         }
-        if (  signal_filt[1]&(FAR_LEFT  + NEAR_LEFT )) dock_detector--;
-        if (  signal_filt[1]&(FAR_RIGHT + NEAR_RIGHT)) dock_detector++;
-        if ( (signal_filt[1]&FAR_CENTER) || (signal_filt[1]&NEAR_CENTER) ) {
-          setStateVel(ALIGNED, 0.05, 0.00); break;
+        if (  signal_filt[1]&(DockStationIRState::FAR_LEFT  + DockStationIRState::NEAR_LEFT )) dock_detector--;
+        if (  signal_filt[1]&(DockStationIRState::FAR_RIGHT + DockStationIRState::NEAR_RIGHT)) dock_detector++;
+        if ( (signal_filt[1]&DockStationIRState::FAR_CENTER) || (signal_filt[1]&DockStationIRState::NEAR_CENTER) ) {
+          setStateVel(RobotDockingState::ALIGNED, 0.05, 0.00); break;
         } else if ( signal_filt[1] ) {
-          setStateVel(SCAN, 0.00, 0.10); break;
+          setStateVel(RobotDockingState::SCAN, 0.00, 0.10); break;
         } else {
-          setStateVel(SCAN, 0.00, 0.66); break;
+          setStateVel(RobotDockingState::SCAN, 0.00, 0.66); break;
         }
 
-      } else if (state==ALIGNED || state==ALIGNED_FAR || state==ALIGNED_NEAR) {
+      } else if (state==RobotDockingState::ALIGNED || state==RobotDockingState::ALIGNED_FAR || state==RobotDockingState::ALIGNED_NEAR) {
         if ( signal_filt[1] ) {
-          if ( signal_filt[1]&NEAR )
+          if ( signal_filt[1]&DockStationIRState::NEAR )
           {
-            if ( ((signal_filt[1]&NEAR) == NEAR_CENTER) || ((signal_filt[1]&NEAR) == NEAR) ) { setStateVel(ALIGNED_NEAR, 0.05,  0.0); debug_str = "AlignedNearCenter"; break; }
-            if (   signal_filt[1]&NEAR_LEFT  ) {                                               setStateVel(ALIGNED_NEAR, 0.05,  0.1); debug_str = "AlignedNearLeft"  ; break; }
-            if (   signal_filt[1]&NEAR_RIGHT ) {                                               setStateVel(ALIGNED_NEAR, 0.05, -0.1); debug_str = "AlignedNearRight" ; break; }
+            if ( ((signal_filt[1]&DockStationIRState::NEAR) == DockStationIRState::NEAR_CENTER) || ((signal_filt[1]&DockStationIRState::NEAR) == DockStationIRState::NEAR) ) { setStateVel(RobotDockingState::ALIGNED_NEAR, 0.05,  0.0); debug_str = "AlignedNearCenter"; break; }
+            if (   signal_filt[1]&DockStationIRState::NEAR_LEFT  ) {                                               setStateVel(RobotDockingState::ALIGNED_NEAR, 0.05,  0.1); debug_str = "AlignedNearLeft"  ; break; }
+            if (   signal_filt[1]&DockStationIRState::NEAR_RIGHT ) {                                               setStateVel(RobotDockingState::ALIGNED_NEAR, 0.05, -0.1); debug_str = "AlignedNearRight" ; break; }
           }
-          if ( signal_filt[1]&FAR )
+          if ( signal_filt[1]&DockStationIRState::FAR )
           {
-            if ( ((signal_filt[1]&FAR) == FAR_CENTER) || ((signal_filt[1]&FAR) == FAR) ) { setStateVel(ALIGNED_FAR, 0.1,  0.0); debug_str = "AlignedFarCenter"; break; }
-            if (   signal_filt[1]&FAR_LEFT  ) {                                            setStateVel(ALIGNED_FAR, 0.1,  0.3); debug_str = "AlignedFarLeft"  ; break; }
-            if (   signal_filt[1]&FAR_RIGHT ) {                                            setStateVel(ALIGNED_FAR, 0.1, -0.3); debug_str = "AlignedFarRight" ; break; }
+            if ( ((signal_filt[1]&DockStationIRState::FAR) == DockStationIRState::FAR_CENTER) || ((signal_filt[1]&DockStationIRState::FAR) == DockStationIRState::FAR) ) { setStateVel(RobotDockingState::ALIGNED_FAR, 0.1,  0.0); debug_str = "AlignedFarCenter"; break; }
+            if (   signal_filt[1]&DockStationIRState::FAR_LEFT  ) {                                            setStateVel(RobotDockingState::ALIGNED_FAR, 0.1,  0.3); debug_str = "AlignedFarLeft"  ; break; }
+            if (   signal_filt[1]&DockStationIRState::FAR_RIGHT ) {                                            setStateVel(RobotDockingState::ALIGNED_FAR, 0.1, -0.3); debug_str = "AlignedFarRight" ; break; }
           }
           dock_detector = 0;
           rotated = 0.0;
-          setStateVel(SCAN, 0.00, 0.66); break;
+          setStateVel(RobotDockingState::SCAN, 0.00, 0.66); break;
         } else {
           debug_str = "lost signals";
-          setStateVel(LOST, 0.00, 0.00); break;
+          setStateVel(RobotDockingState::LOST, 0.00, 0.00); break;
         }
-      } else if (state==FIND_STREAM) {
+      } else if (state==RobotDockingState::FIND_STREAM) {
         if (dock_detector > 0 ) { // robot is placed in right side of docking station
           //turn  right , negative direction til get right signal from left sensor
-          if (signal_filt[2]&(FAR_RIGHT+NEAR_RIGHT)) {
-            setStateVel(GET_STREAM, 0.05, 0.0); break;
+          if (signal_filt[2]&(DockStationIRState::FAR_RIGHT+DockStationIRState::NEAR_RIGHT)) {
+            setStateVel(RobotDockingState::GET_STREAM, 0.05, 0.0); break;
           } else {
-            setStateVel(FIND_STREAM, 0.0, -0.33); break;
+            setStateVel(RobotDockingState::FIND_STREAM, 0.0, -0.33); break;
           }
         } else if (dock_detector < 0 ) { // robot is placed in left side of docking station
           //turn left, positive direction till get left signal from right sensor
-          if (signal_filt[0]&(FAR_LEFT+NEAR_LEFT)) {
-            setStateVel(GET_STREAM, 0.05, 0.0); break;
+          if (signal_filt[0]&(DockStationIRState::FAR_LEFT+DockStationIRState::NEAR_LEFT)) {
+            setStateVel(RobotDockingState::GET_STREAM, 0.05, 0.0); break;
           } else {
-            setStateVel(FIND_STREAM, 0.0, 0.33); break;
+            setStateVel(RobotDockingState::FIND_STREAM, 0.0, 0.33); break;
           }
         }
-      } else if (state==GET_STREAM) {
+      } else if (state==RobotDockingState::GET_STREAM) {
         if (dock_detector > 0) { //robot is placed in right side of docking station
-          if (signal_filt[2]&(FAR_LEFT+NEAR_LEFT)) {
+          if (signal_filt[2]&(DockStationIRState::FAR_LEFT+DockStationIRState::NEAR_LEFT)) {
             dock_detector = 0;
             rotated = 0.0;
-            setStateVel(SCAN, 0.0, 0.10); break;
+            setStateVel(RobotDockingState::SCAN, 0.0, 0.10); break;
           } else {
-            setStateVel(GET_STREAM, 0.05, 0.0); break;
+            setStateVel(RobotDockingState::GET_STREAM, 0.05, 0.0); break;
           }
         } else if (dock_detector < 0) { // robot is placed in left side of docking station
-          if (signal_filt[0]&(FAR_RIGHT+NEAR_RIGHT)) {
+          if (signal_filt[0]&(DockStationIRState::FAR_RIGHT+DockStationIRState::NEAR_RIGHT)) {
             dock_detector = 0;
             rotated = 0.0;
-            setStateVel(SCAN, 0.0, 0.10); break;
+            setStateVel(RobotDockingState::SCAN, 0.0, 0.10); break;
           } else {
-            setStateVel(GET_STREAM, 0.05, 0.0); break;
+            setStateVel(RobotDockingState::GET_STREAM, 0.05, 0.0); break;
           }
         }
       } else {
         dock_detector = 0;
         rotated = 0.0;
-        setStateVel(SCAN, 0.00, 0.66); break;
+        setStateVel(RobotDockingState::SCAN, 0.00, 0.66); break;
       }
     }
-    setStateVel(UNKNOWN, 0.00, 0.00); break;
+    setStateVel(RobotDockingState::UNKNOWN, 0.00, 0.00); break;
   } while(0);
 }
-*/
 } // kobuki namespace
