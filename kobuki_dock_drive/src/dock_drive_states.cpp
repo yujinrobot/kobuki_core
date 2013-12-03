@@ -48,6 +48,8 @@ namespace kobuki {
     @ rotated : records how much the robot has rotated in scan state 
    *********************************************************/    
   void DockDrive::idle(RobotDockingState::State& nstate,double& nvx, double& nwz) {
+    dock_detector = 0;
+    rotated = 0.0;
     nstate = RobotDockingState::SCAN;
     nvx = 0;
     nwz = 0.66;
@@ -98,7 +100,7 @@ namespace kobuki {
       next_wz = 0.66;
     } 
     // robot is located in front of robot 
-    else if(mid & (DockStationIRState::FAR_CENTER + DockStationIRState::NEAR_CENTER))
+    else if((mid & DockStationIRState::FAR_CENTER) || (mid & DockStationIRState::NEAR_CENTER))
     {
       next_state = RobotDockingState::ALIGNED;
       next_vx = 0.05;
@@ -171,7 +173,7 @@ namespace kobuki {
  /********************************************************
   * Get stream
   *
-  *   It is heading the center line of dock and approaching. When it passes the center, it rotates toward the dock 
+  *   In this state, robot is heading the center line of dock. When it passes the center, it rotates toward the dock 
   *
   ********************************************************/
   void DockDrive::get_stream(RobotDockingState::State& nstate,double& nvx, double& nwz, const std::vector<unsigned char>& signal_filt) 
@@ -228,49 +230,50 @@ namespace kobuki {
 
     if(mid) 
     {
-      if(((mid & DockStationIRState::NEAR) == DockStationIRState::NEAR_CENTER) || ( mid & DockStationIRState::NEAR))
+      if(((mid & DockStationIRState::NEAR) == DockStationIRState::NEAR_CENTER) || ((mid & DockStationIRState::NEAR) == DockStationIRState::NEAR))
       {
         debug_str = "AlignedNearCenter";
         next_state = RobotDockingState::ALIGNED_NEAR;
         next_vx = 0.05;
         next_wz = 0.0;
       }
-      if(mid & DockStationIRState::NEAR_LEFT) {
+      else if(mid & DockStationIRState::NEAR_LEFT) {
         debug_str = "AlignedNearLeft";
         next_state = RobotDockingState::ALIGNED_NEAR;
         next_vx = 0.05;
         next_wz = 0.1;
       }
-      if(mid & DockStationIRState::NEAR_LEFT) {
+      else if(mid & DockStationIRState::NEAR_RIGHT) {
         debug_str = "AlignedNearRight";
         next_state = RobotDockingState::ALIGNED_NEAR;
         next_vx = 0.05;
         next_wz = -0.1;
       }
-      if(((mid & DockStationIRState::FAR) == DockStationIRState::FAR_CENTER) || ( mid & DockStationIRState::FAR)) {
+      else if(((mid & DockStationIRState::FAR) == DockStationIRState::FAR_CENTER) || ((mid & DockStationIRState::FAR) == DockStationIRState::FAR)) {
         debug_str = "AlignedFarCenter";
         next_state = RobotDockingState::ALIGNED_FAR;
         next_vx = 0.1;
         next_wz = 0.0;
       }
-      if(mid & DockStationIRState::FAR_LEFT) {
+      else if(mid & DockStationIRState::FAR_LEFT) {
         debug_str = "AlignedFarLeft";
         next_state = RobotDockingState::ALIGNED_FAR;
         next_vx = 0.1;
         next_wz = 0.3;
       }
-      if(mid & DockStationIRState::FAR_RIGHT) {
+      else if(mid & DockStationIRState::FAR_RIGHT) {
         debug_str = "AlignedFarRight";
         next_state = RobotDockingState::ALIGNED_FAR;
         next_vx = 0.1;
         next_wz = -0.3;
       }
-      
+      else {
         dock_detector = 0;
         rotated = 0.0;
         next_state = RobotDockingState::SCAN;
         next_vx = 0.0;
         next_wz = 0.66;
+      }
     }
     else {
       debug_str = "Lost Signals";

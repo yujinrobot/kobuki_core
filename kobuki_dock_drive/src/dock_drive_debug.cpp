@@ -101,6 +101,7 @@ void DockDrive::generateDebugMessage(const std::vector<unsigned char>& signal_fi
   debug_stream << "[vx: " << std::setw(7) << vx << ", wz: " << std::setw(7) << wz << "]";
   debug_stream << "[S: " << state_str << "]";
   debug_stream << "[" << debug_str << "]";
+  debug_stream << "DD: " << dock_detector << " ";
   //debug_stream << std::endl;
   debug_output = debug_stream.str();
 
