@@ -207,27 +207,33 @@ void DockDrive::velocityCommands(const double &vx_, const double &wz_) {
 }
 
 void DockDrive::processBumpChargeEvent(const unsigned char& bumper, const unsigned char& charger) {
+  RobotDockingState::State new_state;
   if(charger && bumper) {
-    setStateVel(RobotDockingState::BUMPED_DOCK, -0.01, 0.0); 
+    new_state = RobotDockingState::BUMPED_DOCK;
+    setStateVel(new_state, -0.01, 0.0); 
   }
   else if(charger) {
-    if(dock_stabilizer == 0) {
-      setStateVel(RobotDockingState::DOCKED_IN, 0.0, 0.0); 
+    if(dock_stabilizer++ == 0) {
+      new_state = RobotDockingState::DOCKED_IN;
+      setStateVel(new_state, 0.0, 0.0); 
     }
     else if(dock_stabilizer > 20) {
       dock_stabilizer = 0;
       is_enabled = false;
       can_run = false;
-      setStateVel(RobotDockingState::IDLE, 0.0, 0.0);
+      new_state = RobotDockingState::DONE;
+      setStateVel(new_state, 0.0, 0.0);
     }
     else {
-      dock_stabilizer++;
-      setStateVel(RobotDockingState::DOCKED_IN, 0.0, 0.0); 
+      new_state = RobotDockingState::DOCKED_IN;
+      setStateVel(new_state, 0.0, 0.0); 
     }
   }
   else if(bumper) {
-    setStateVel(RobotDockingState::BUMPED, -0.05, 0.0);
+    new_state = RobotDockingState::BUMPED;
+    setStateVel(new_state, -0.05, 0.0);
   }
+  state_str = ROBOT_STATE_STR[new_state];
 }
 
 /*************************

@@ -76,12 +76,14 @@ namespace kobuki {
     std::ostringstream oss;
     oss << "rotated: " << std::fixed << std::setprecision(2) << std::setw(4) << rotated;
     debug_str = oss.str();
-    
-    if(std::abs(rotated) > 1.6) 
+
+
+
+    if((mid & DockStationIRState::FAR_CENTER) || (mid & DockStationIRState::NEAR_CENTER))
     {
-      next_state = RobotDockingState::FIND_STREAM;
-      next_vx = 0;
-      next_wz = 0;
+      next_state = RobotDockingState::ALIGNED;
+      next_vx = 0.05;
+      next_wz = 0.0;
     }
     // robot is located left side of dock
     else if(mid & (DockStationIRState::FAR_LEFT + DockStationIRState::NEAR_LEFT)) 
@@ -100,16 +102,16 @@ namespace kobuki {
       next_wz = 0.66;
     } 
     // robot is located in front of robot 
-    else if((mid & DockStationIRState::FAR_CENTER) || (mid & DockStationIRState::NEAR_CENTER))
-    {
-      next_state = RobotDockingState::ALIGNED;
-      next_vx = 0.05;
-      next_wz = 0.0;
-    }
     else if(mid) { // if mid sensor sees something, rotate slowly
       next_state = RobotDockingState::SCAN;
       next_vx = 0.0;
       next_wz = 0.10;
+    }
+    else if(std::abs(rotated) > 1.0) 
+    {
+      next_state = RobotDockingState::FIND_STREAM;
+      next_vx = 0;
+      next_wz = 0;
     }
     else { // if mid sensor does not see anything, rotate fast
       next_state = RobotDockingState::SCAN;
@@ -224,9 +226,9 @@ namespace kobuki {
     unsigned char right = signal_filt[0];
     unsigned char mid   = signal_filt[1];
     unsigned char left  = signal_filt[2];
-    RobotDockingState::State next_state;
-    double next_vx;
-    double next_wz;
+    RobotDockingState::State next_state = nstate;
+    double next_vx = nvx;
+    double next_wz = nwz;
 
     if(mid) 
     {
@@ -276,10 +278,9 @@ namespace kobuki {
       }
     }
     else {
-      debug_str = "Lost Signals";
-      next_state = RobotDockingState::LOST;
-      next_vx = 0.0;
-      next_wz = 0.0;
+        next_state = RobotDockingState::SCAN;
+        next_vx = 0.0;
+        next_wz = 0.66;
     }
 
     nstate = next_state;
