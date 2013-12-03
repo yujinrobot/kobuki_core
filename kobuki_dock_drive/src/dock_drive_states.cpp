@@ -46,6 +46,7 @@ namespace kobuki {
    * Shared variables among states
     @ dock_detector : records + or - when middle IR sensor detects docking signal
     @ rotated : records how much the robot has rotated in scan state 
+    @ bump_remainder : from processBumpChargerEvent. 
    *********************************************************/    
   void DockDrive::idle(RobotDockingState::State& nstate,double& nvx, double& nwz) {
     dock_detector = 0;
@@ -286,5 +287,22 @@ namespace kobuki {
     nstate = next_state;
     nvx = next_vx;
     nwz = next_wz;
+  }
+
+  void DockDrive::bumped(RobotDockingState::State& nstate,double& nvx, double& nwz, int& bump_count) 
+  {
+    if(bump_count < 10)
+    {
+      nvx = -0.05;
+      nwz = 0.0;
+      bump_count++;
+    }
+    else {
+      nstate = RobotDockingState::SCAN;
+      nvx = 0.0;
+      nwz = 0.0;
+      bump_count = 0;
+    }
+
   }
 } 

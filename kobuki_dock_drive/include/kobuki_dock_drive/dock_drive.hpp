@@ -125,6 +125,7 @@ protected:
   void find_stream(RobotDockingState::State& state,double& vx, double& wz, const std::vector<unsigned char>& signal_filt);
   void get_stream(RobotDockingState::State& state,double& vx, double& wz, const std::vector<unsigned char>& signal_filt);
   void aligned(RobotDockingState::State& state,double& vx, double& wz, const std::vector<unsigned char>& signal_filt, std::string& debug_str);
+  void bumped(RobotDockingState::State& nstate,double& nvx, double& nwz, int& bump_count); 
 
 
 private:

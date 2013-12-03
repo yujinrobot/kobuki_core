@@ -232,6 +232,7 @@ void DockDrive::processBumpChargeEvent(const unsigned char& bumper, const unsign
   else if(bumper) {
     new_state = RobotDockingState::BUMPED;
     setStateVel(new_state, -0.05, 0.0);
+    bump_remainder = 0;
   }
   state_str = ROBOT_STATE_STR[new_state];
 }
@@ -250,7 +251,7 @@ void DockDrive::updateVelocity(const std::vector<unsigned char>& signal_filt, co
   std::ostringstream oss;
   RobotDockingState::State current_state, new_state;
   double new_vx = 0.0;
-  double new_vy = 0.0;
+  double new_wz = 0.0;
 
   // determine the current state based on ir and the previous state
   // common transition. idle -> scan -> find_stream -> get_stream -> scan -> aligned_far -> aligned_near -> docked_in -> done
@@ -258,21 +259,24 @@ void DockDrive::updateVelocity(const std::vector<unsigned char>& signal_filt, co
   current_state = new_state = state;
   switch((unsigned int)current_state) {
     case RobotDockingState::IDLE:
-      idle(new_state, new_vx, new_vy);
+      idle(new_state, new_vx, new_wz);
       break;
     case RobotDockingState::SCAN:
-      scan(new_state, new_vx, new_vy, signal_filt, pose_update, debug_str);
+      scan(new_state, new_vx, new_wz, signal_filt, pose_update, debug_str);
       break;
     case RobotDockingState::FIND_STREAM:
-      find_stream(new_state, new_vx, new_vy, signal_filt);
+      find_stream(new_state, new_vx, new_wz, signal_filt);
       break;
     case RobotDockingState::GET_STREAM:
-      get_stream(new_state, new_vx, new_vy, signal_filt);
+      get_stream(new_state, new_vx, new_wz, signal_filt);
       break;
     case RobotDockingState::ALIGNED:
     case RobotDockingState::ALIGNED_FAR:
     case RobotDockingState::ALIGNED_NEAR:
-      aligned(new_state, new_vx, new_vy, signal_filt, debug_str);
+      aligned(new_state, new_vx, new_wz, signal_filt, debug_str);
+      break;
+    case RobotDockingState::BUMPED:
+      bumped(new_state, new_vx, new_wz, bump_remainder);
       break;
     default:
       oss << "Wrong state : " << current_state;
@@ -280,7 +284,7 @@ void DockDrive::updateVelocity(const std::vector<unsigned char>& signal_filt, co
       break;
   }
 
-  setStateVel(new_state, new_vx, new_vy);
+  setStateVel(new_state, new_vx, new_wz);
   state_str = ROBOT_STATE_STR[new_state];
   /*
   std::ostringstream os;
