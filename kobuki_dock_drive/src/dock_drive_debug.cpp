@@ -42,25 +42,14 @@ namespace kobuki {
  * debug prints
  *************************/
 
+/***********************************************************
+  @breif generates debug string to tell the current status of robot. Signal info + bumper + charger + current velocity + dock detector
+ ***********************************************************/
 void DockDrive::generateDebugMessage(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update, const std::string& debug_str)
 {
   
   std::ostringstream debug_stream;
   // pose_update and pose_update_rates for debugging
-  /*
-  debug_stream << std::fixed << std::setprecision(4)
-    << "[x: "    << std::setw(7) << pose_update.x()
-    << ", y: "  << std::setw(7) << pose_update.y()
-    << ", th: " << std::setw(7) << pose_update.heading()
-    << "]";
-
-  //dock_ir signal
-  debug_stream 
-    << "[l: "  << binary(signal_filt[2])
-    << ", c: " << binary(signal_filt[1])
-    << ", r: " << binary(signal_filt[0])
-    << "]";
-*/
   std::string far_signal  = "[F: "; //far field
   std::string near_signal = "[N: "; //near field
   for (unsigned int i=0; i<3; i++) {
@@ -100,8 +89,8 @@ void DockDrive::generateDebugMessage(const std::vector<unsigned char>& signal_fi
   //debug_stream << std::fixed << std::setprecision(4)
   debug_stream << "[vx: " << std::setw(7) << vx << ", wz: " << std::setw(7) << wz << "]";
   debug_stream << "[S: " << state_str << "]";
+  debug_stream << "[dock_detecotr: : " << dock_detector << " ]";
   debug_stream << "[" << debug_str << "]";
-  debug_stream << "DD: " << dock_detector << " ";
   //debug_stream << std::endl;
   debug_output = debug_stream.str();
 

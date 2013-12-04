@@ -27,7 +27,7 @@
  * possibility of such damage.
  */
 /**
- * @file /kobuki_driver/src/driver/dock_drive.cpp
+ * @file /kobuki_driver/src/driver/dock_drive_states.cpp
  *
  **/
 
@@ -44,10 +44,20 @@
 namespace kobuki {
   /*********************************************************
    * Shared variables among states
-    @ dock_detector : records + or - when middle IR sensor detects docking signal
-    @ rotated : records how much the robot has rotated in scan state 
-    @ bump_remainder : from processBumpChargerEvent. 
+   * @ dock_detector : records + or - when middle IR sensor detects docking signal
+   * @ rotated : records how much the robot has rotated in scan state 
+   * @ bump_remainder : from processBumpChargerEvent. 
    *********************************************************/    
+
+
+  /*******************************************************
+   * Idle
+   *  @breif Entry of auto docking state machine
+   *
+   *  Shared variable
+   *  @dock_detecotr - indicates where the dock is located. Positive means dock is on left side of robot 
+   *  @rotated       - indicates how much the robot has rotated while scan
+   *******************************************************/
   void DockDrive::idle(RobotDockingState::State& nstate,double& nvx, double& nwz) {
     dock_detector = 0;
     rotated = 0.0;
@@ -58,11 +68,12 @@ namespace kobuki {
 
   /********************************************************
    * Scan
-   *  While it rotates ccw, determines the dock location with only middle sensor.
-   *  If its middle sensor detects center ir, the robot is aligned with docking station
+   *  @breif While it rotates ccw, determines the dock location with only middle sensor. 
+   *         If its middle sensor detects center ir, the robot is aligned with docking station
    *
-   *  It sets dock_detector value
-   *
+   *  Shared variable
+   *  @dock_detecotr - indicates where the dock is located. Positive means dock is on left side of robot 
+   *  @rotated       - indicates how much the robot has rotated while scan
    ********************************************************/
   void DockDrive::scan(RobotDockingState::State& nstate,double& nvx, double& nwz, const std::vector<unsigned char>& signal_filt, const ecl::Pose2D<double>& pose_update, std::string& debug_str) {
     unsigned char right = signal_filt[0];
@@ -127,7 +138,10 @@ namespace kobuki {
 
   /********************************************************
    * Find stream
-   *  based on dock_detector variable, it determines the dock's location and rotates toward the center of dock 
+   *  @breif based on dock_detector variable, it determines the dock's location and rotates toward the center line of dock 
+   * 
+   *  Shared variable
+   *  @dock_detector - to determine dock's location
    *
    ********************************************************/
   void DockDrive::find_stream(RobotDockingState::State& nstate,double& nvx, double& nwz, const std::vector<unsigned char>& signal_filt) {
@@ -175,9 +189,11 @@ namespace kobuki {
 
  /********************************************************
   * Get stream
-  *
-  *   In this state, robot is heading the center line of dock. When it passes the center, it rotates toward the dock 
-  *
+  *   @brief In this state, robot is heading the center line of dock. When it passes the center, it rotates toward the dock 
+  *   
+  *   Shared Variable
+  *   @ dock_detector - reset
+  *   @ rotated       - reset
   ********************************************************/
   void DockDrive::get_stream(RobotDockingState::State& nstate,double& nvx, double& nwz, const std::vector<unsigned char>& signal_filt) 
   {
@@ -222,6 +238,15 @@ namespace kobuki {
     nwz = next_wz;
   }
 
+
+ /********************************************************
+  * Aligned 
+  *   @breif Robot sees center IR with middle sensor. It is heading dock. It approaches to the dock only using mid sensor 
+  *   
+  *   Shared Variable
+  *   @ dock_detector - reset
+  *   @ rotated       - reset
+  ********************************************************/
   void DockDrive::aligned(RobotDockingState::State& nstate,double& nvx, double& nwz, const std::vector<unsigned char>& signal_filt, std::string& debug_str) 
   {
     unsigned char right = signal_filt[0];
@@ -289,6 +314,12 @@ namespace kobuki {
     nwz = next_wz;
   }
 
+
+ /********************************************************
+  * Bumped 
+  *  @breif Robot has bumped somewhere. Go backward for 10 iteration 
+  *   
+  ********************************************************/
   void DockDrive::bumped(RobotDockingState::State& nstate,double& nvx, double& nwz, int& bump_count) 
   {
     if(bump_count < 10)

@@ -68,7 +68,7 @@ DockDrive::DockDrive() :
   , signal_window(20)
   , ROBOT_STATE_STR(13)
 {
-
+  // Debug messages
   ROBOT_STATE_STR[0] = "IDLE";
   ROBOT_STATE_STR[1] = "DONE";
   ROBOT_STATE_STR[2] = "DOCKED_IN";
@@ -82,21 +82,6 @@ DockDrive::DockDrive() :
   ROBOT_STATE_STR[10] = "ALIGNED_NEAR";
   ROBOT_STATE_STR[11] = "UNKNOWN";
   ROBOT_STATE_STR[12] = "LOST";
-  /*
-    "DONE",
-    "DOCKED_IN",
-    "BUMPED_DOCK",
-    "BUMPED",
-    "SCAN",
-    "FIND_STREAM",
-    "GET_STREAM",
-    "ALIGNED",
-    "ALIGNED_FAR",
-    "ALIGNED_NEAR",
-    "UNKNOWN",
-    "LOST"};
-*/
-
 }
 
 DockDrive::~DockDrive(){;}
@@ -141,9 +126,6 @@ void DockDrive::update(const std::vector<unsigned char> &signal
     processBumpChargeEvent(bumper, charger);
   }
   else {
-    /*************************
-     * pre processing
-     *************************/
     computePoseUpdate(pose_update, pose);
     filterIRSensor(signal_filt, signal);
     updateVelocity(signal_filt, pose_update, debug_str);
@@ -206,6 +188,13 @@ void DockDrive::velocityCommands(const double &vx_, const double &wz_) {
   wz = wz_;
 }
 
+/****************************************************
+ * @brief process bumper and charge event. If robot is charging, terminates auto dokcing process. If it bumps something, Set the next state as bumped and go backward 
+ *
+ * @bumper - indicates whether bumper has pressed
+ * @charger - indicates whether robot is charging
+ *
+ ****************************************************/
 void DockDrive::processBumpChargeEvent(const unsigned char& bumper, const unsigned char& charger) {
   RobotDockingState::State new_state;
   if(charger && bumper) {
@@ -286,11 +275,6 @@ void DockDrive::updateVelocity(const std::vector<unsigned char>& signal_filt, co
 
   setStateVel(new_state, new_vx, new_wz);
   state_str = ROBOT_STATE_STR[new_state];
-  /*
-  std::ostringstream os;
-  os << new_state;
-  state_str = os.str(); 
-  */
 }
 
 /*************************
