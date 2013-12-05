@@ -10,7 +10,7 @@ catkin_package(
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 
-add_library(kobuki_dock_drive src/dock_drive.cpp)
+add_library(kobuki_dock_drive src/dock_drive.cpp src/dock_drive_states.cpp src/dock_drive_debug.cpp)
 
 target_link_libraries(kobuki_dock_drive ${catkin_LIBRARIES})
 

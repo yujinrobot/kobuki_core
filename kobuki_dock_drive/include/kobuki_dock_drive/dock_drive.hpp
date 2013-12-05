@@ -51,6 +51,8 @@
 #include <ecl/geometry/pose2d.hpp>
 #include <ecl/linear_algebra.hpp>
 
+#include "kobuki_dock_drive/state.hpp"
+
 /*****************************************************************************
 ** Namespaces
 *****************************************************************************/
@@ -63,38 +65,6 @@ namespace kobuki {
 
 class DockDrive {
 public:
-  enum Station {
-    NEAR_LEFT=1,
-    NEAR_CENTER=2,
-    NEAR_RIGHT=4,
-    FAR_CENTER=8,
-    FAR_LEFT=16,
-    FAR_RIGHT=32,
-    NEAR = 7,
-    FAR = 56,
-  };
-  enum State {
-    IDLE,
-    LOST,
-    UNKNOWN,
-    INSIDE_FIELD,
-    AWAY,
-    SCAN,
-    SPIN,
-    SPIRAL,
-    FIND_STREAM,
-    GET_STREAM,
-    ALIGNED,
-    ALIGNED_FAR,
-    ALIGNED_NEAR,
-    BUMPED,
-    BUMPED_DOCK,
-    RUN,
-    STOP,
-    DOCKED_IN,
-    DONE,
-  };
-
   DockDrive();
   ~DockDrive();
 
@@ -111,12 +81,6 @@ public:
                 , const unsigned char &charger
                 , const ecl::Pose2D<double> &pose);
 
-  void update(const std::vector<unsigned char> &signal /* dock_ir signal*/
-                , const unsigned char &bumper
-                , const unsigned char &charger
-                , const ecl::Pose2D<double> &pose_update
-                , const ecl::linear_algebra::Vector3d &pose_update_rates);
-
   void velocityCommands(const double &vx, const double &wz);
 
   /*********************
@@ -128,7 +92,7 @@ public:
   /*********************
   ** Mode Accessors
   **********************/
-  State getState() const { return state; }
+  RobotDockingState::State getState() const { return state; }
   std::string getStateStr() const { return state_str; }
   std::string getDebugStr() const { return debug_str; }
 
@@ -145,25 +109,47 @@ public:
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
+protected:
+  void processBumpChargeEvent(const unsigned char& bumper, const unsigned char& charger);
+  void computePoseUpdate(ecl::Pose2D<double>& pose_update, const ecl::Pose2D<double>& pose);
+  void filterIRSensor(std::vector<unsigned char>& signal_filt,const std::vector<unsigned char> &signal );
+  void generateDebugMessage(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::Pose2D<double>& pose_update, const std::string& debug_str);
+  void updateVelocity(const std::vector<unsigned char>& signal_filt, const ecl::Pose2D<double>& pose_update, std::string& debug_str);
+  RobotDockingState::State determineRobotLocation(const std::vector<unsigned char>& signal_filt,const unsigned char& charger);
+  bool validateSignal(const std::vector<unsigned char>& signal_filt, const unsigned int state);
+
+
+  // States
+  void idle(RobotDockingState::State& state,double& vx, double& wz); 
+  void scan(RobotDockingState::State& state,double& vx, double& wz, const std::vector<unsigned char>& signal_filt, const ecl::Pose2D<double>& pose_update, std::string& debug_str);
+  void find_stream(RobotDockingState::State& state,double& vx, double& wz, const std::vector<unsigned char>& signal_filt);
+  void get_stream(RobotDockingState::State& state,double& vx, double& wz, const std::vector<unsigned char>& signal_filt);
+  void aligned(RobotDockingState::State& state,double& vx, double& wz, const std::vector<unsigned char>& signal_filt, std::string& debug_str);
+  void bumped(RobotDockingState::State& nstate,double& nvx, double& nwz, int& bump_count); 
+
+
 private:
   bool is_enabled, can_run;
 
-  State state;
+  RobotDockingState::State state;
   std::string state_str, debug_str;
   double vx, wz;
   std::vector<std::vector<unsigned char> > past_signals;
+  unsigned int signal_window;
   int bump_remainder;
   int dock_stabilizer;
   int dock_detector;
   double rotated;
   double min_abs_v;
   double min_abs_w;
+  ecl::Pose2D<double> pose_priv;
 
   void setVel(double v, double w);
 
   std::string binary(unsigned char number) const;
 
   std::string debug_output;
+  std::vector<std::string> ROBOT_STATE_STR;
 };
 
 } // namespace kobuki

@@ -1,30 +1,30 @@
 /*
- * Copyright (c) 2012, Yujin Robot.
- * All rights reserved.
+ * copyright (c) 2013, yujin robot.
+ * all rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without
+ * redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- *     * Redistributions of source code must retain the above copyright
+ *     * redistributions of source code must retain the above copyright
  *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
+ *     * redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of Yujin Robot nor the names of its
+ *     * neither the name of yujin robot nor the names of its
  *       contributors may be used to endorse or promote products derived from
  *       this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
+ * this software is provided by the copyright holders and contributors "as is"
+ * and any express or implied warranties, including, but not limited to, the
+ * implied warranties of merchantability and fitness for a particular purpose
+ * are disclaimed. in no event shall the copyright owner or contributors be
+ * liable for any direct, indirect, incidental, special, exemplary, or
+ * consequential damages (including, but not limited to, procurement of
+ * substitute goods or services; loss of use, data, or profits; or business
+ * interruption) however caused and on any theory of liability, whether in
+ * contract, strict liability, or tort (including negligence or otherwise)
+ * arising in any way out of the use of this software, even if advised of the
+ * possibility of such damage.
  */
 /**
  * @file /kobuki_driver/src/driver/dock_drive.cpp
@@ -32,18 +32,18 @@
  **/
 
 /*****************************************************************************
-** Includes
+** includes
 *****************************************************************************/
 
 #include "kobuki_dock_drive/dock_drive.hpp"
 
 /*****************************************************************************
-** Defines
+** defines
 *****************************************************************************/
 
 #define sign(x) (x>0?+1:x<0?-1:0)
 #define stringfy(x) #x
-#define setState(x) {state=x;state_str=stringfy(x);}
+#define setState(x) {state=x;}
 #define setStateVel(x,v,w) {setState(x);setVel(v,w);}
 
 /*****************************************************************************
@@ -57,7 +57,7 @@ namespace kobuki {
 *****************************************************************************/
 DockDrive::DockDrive() :
   is_enabled(false), can_run(false) 
-  , state(IDLE), state_str("IDLE")
+  , state(RobotDockingState::IDLE), state_str("IDLE")
   , vx(0.0), wz(0.0)
   , bump_remainder(0)
   , dock_stabilizer(0)
@@ -65,7 +65,23 @@ DockDrive::DockDrive() :
   , rotated(0.0)
   , min_abs_v(0.01)
   , min_abs_w(0.1)
+  , signal_window(20)
+  , ROBOT_STATE_STR(13)
 {
+  // Debug messages
+  ROBOT_STATE_STR[0] = "IDLE";
+  ROBOT_STATE_STR[1] = "DONE";
+  ROBOT_STATE_STR[2] = "DOCKED_IN";
+  ROBOT_STATE_STR[3] = "BUMPED_DOCK";
+  ROBOT_STATE_STR[4] = "BUMPED";
+  ROBOT_STATE_STR[5] = "SCAN";
+  ROBOT_STATE_STR[6] = "FIND_STREAM";
+  ROBOT_STATE_STR[7] = "GET_STREAM";
+  ROBOT_STATE_STR[8] = "ALIGNED";
+  ROBOT_STATE_STR[9] = "ALIGNED_FAR";
+  ROBOT_STATE_STR[10] = "ALIGNED_NEAR";
+  ROBOT_STATE_STR[11] = "UNKNOWN";
+  ROBOT_STATE_STR[12] = "LOST";
 }
 
 DockDrive::~DockDrive(){;}
@@ -78,28 +94,10 @@ void DockDrive::setVel(double v, double w)
 
 void DockDrive::modeShift(const std::string& mode)
 {
-  if (mode == "enable")  { is_enabled = true;  can_run = true; }
+  if (mode == "enable")  { is_enabled = true;  can_run = true; state = RobotDockingState::IDLE;}
   if (mode == "disable") { is_enabled = false; can_run = false; }
   if (mode == "run")  can_run = true;
   if (mode == "stop") can_run = false;
-}
-
-void DockDrive::update(const std::vector<unsigned char> &signal
-                , const unsigned char &bumper
-                , const unsigned char &charger
-                , const ecl::Pose2D<double> &pose) {
-  static ecl::Pose2D<double> pose_priv;
-  ecl::Pose2D<double> pose_update;
-
-  double dx = pose.x() - pose_priv.x();
-  double dy = pose.y() - pose_priv.y();
-  pose_update.x( std::sqrt( dx*dx + dy*dy ) );
-  pose_update.heading( pose.heading() - pose_priv.heading() );
-  //std::cout << pose_diff << "=" << pose << "-" << pose_priv << " | " << pose_update << std::endl;
-  pose_priv = pose;
-
-  ecl::linear_algebra::Vector3d pose_update_rates; //dummy
-  update( signal, bumper, charger, pose_update, pose_update_rates );
 }
 
 
@@ -108,228 +106,80 @@ void DockDrive::update(const std::vector<unsigned char> &signal
  *
  * Really horrible - could do with an overhaul.
  *
- * @param time_stamp
- * @param left_encoder
- * @param right_encoder
- * @param pose_update
- * @param pose_update_rates
+ * @param dock_ir signal
+ * @param bumper sensor
+ * @param charger sensor
+ * @param current pose
  */
 void DockDrive::update(const std::vector<unsigned char> &signal
                 , const unsigned char &bumper
                 , const unsigned char &charger
-                , const ecl::Pose2D<double> &pose_update
-                , const ecl::linear_algebra::Vector3d &pose_update_rates) {
-  /*************************
-   * pre processing
-   *************************/
+                , const ecl::Pose2D<double>& pose) {
 
-  //dock_ir signals filtering
-  past_signals.push_back(signal);
-  unsigned int window = 20;
-  while (past_signals.size() > window)
-    past_signals.erase( past_signals.begin(), past_signals.begin() + past_signals.size() - window );
-
+  ecl::Pose2D<double> pose_update;
   std::vector<unsigned char> signal_filt(signal.size(), 0);
-  for ( unsigned int i=0; i<past_signals.size(); i++) {
-    if (signal_filt.size() != past_signals[i].size()) continue;
-    for (unsigned int j=0; j<signal_filt.size(); j++)
-      signal_filt[j] |= past_signals[i][j];
+  std::string debug_str;
+
+  // process bumper and charger event first
+  // docking algorithm terminates here 
+  if(bumper || charger) {
+    processBumpChargeEvent(bumper, charger);
   }
-
-
-  /*************************
-   * debug prints
-   *************************/
-  std::ostringstream debug_stream;
-  // pose_update and pose_update_rates for debugging
-  debug_stream << std::fixed << std::setprecision(4)
-    << "[x: "    << std::setw(7) << pose_update.x()
-    << ", y: "  << std::setw(7) << pose_update.y()
-    << ", th: " << std::setw(7) << pose_update.heading()
-    << "]";
-
-  //dock_ir signal
-  /*
-  debug_stream 
-    << "[l: "  << binary(signal_filt[2])
-    << ", c: " << binary(signal_filt[1])
-    << ", r: " << binary(signal_filt[0])
-    << "]";
-  */
-  std::string far_signal  = "[F: "; //far field
-  std::string near_signal = "[N: "; //near field
-  for (unsigned int i=0; i<3; i++) {
-    if (signal_filt[2-i]&FAR_LEFT   ) far_signal  += "L"; else far_signal  += "-";
-    if (signal_filt[2-i]&FAR_CENTER ) far_signal  += "C"; else far_signal  += "-";
-    if (signal_filt[2-i]&FAR_RIGHT  ) far_signal  += "R"; else far_signal  += "-";
-    if (signal_filt[2-i]&NEAR_LEFT  ) near_signal += "L"; else near_signal += "-";
-    if (signal_filt[2-i]&NEAR_CENTER) near_signal += "C"; else near_signal += "-";
-    if (signal_filt[2-i]&NEAR_RIGHT ) near_signal += "R"; else near_signal += "-";
-    far_signal  += " ";
-    near_signal += " ";
+  else {
+    computePoseUpdate(pose_update, pose);
+    filterIRSensor(signal_filt, signal);
+    updateVelocity(signal_filt, pose_update, debug_str);
   }
-  far_signal  += "]";
-  near_signal += "]";
-  debug_stream << far_signal << near_signal;
-
-  //bumper
-  {
-  std::string out = "[B: ";
-  if (bumper&4) out += "L"; else out += "-";
-  if (bumper&2) out += "C"; else out += "-";
-  if (bumper&1) out += "R"; else out += "-";
-  out += "]";
-  debug_stream << out;
-  }
-
-  //charger
-  {
-  std::ostringstream oss;
-  oss << "[C:" << std::setw(2) << (unsigned int)charger;
-  oss << "(";
-  if (charger) oss << "ON"; else oss << "  ";
-  oss << ")]";
-  debug_stream << oss.str();
-  }
-
-
-  /*************************
-   * processing. algorithms; transforma to velocity command
-   *************************/
-  //std::string debug_str = "";
-  debug_str = "";
-  do {  // a kind of hack
-    if ( state==DONE ) setState(IDLE); // when this function is called after final state 'DONE'.
-    if ( state==DOCKED_IN ) {
-      if ( dock_stabilizer++ > 20 ) {
-        is_enabled = false;
-        can_run = false;
-        setStateVel(DONE, 0.0, 0.0); break;
-      }
-      setStateVel(DOCKED_IN, 0.0, 0.0); break;
-    }
-    if ( bump_remainder > 0 ) {
-      bump_remainder--;
-      if ( charger ) { setStateVel(DOCKED_IN, 0.0, 0.0); break; } // when bumper signal is received early than charger(dock) signal.
-      else {           setStateVel(BUMPED_DOCK, -0.01, 0.0); break; }
-    } else if (state == BUMPED) {
-      setState(IDLE); //should I remember and recall previous state?
-      debug_str="how dare!!";
-    }
-    if ( bumper || charger ) {
-      if( bumper && charger ) {
-        bump_remainder = 0;
-        setStateVel(BUMPED_DOCK, -0.01, 0.0); break;
-      }
-      if ( bumper ) {
-        bump_remainder = 50;
-        setStateVel(BUMPED, -0.05, 0.0); break;
-      }
-      if ( charger ) { // already docked in
-        dock_stabilizer = 0;
-        setStateVel(DOCKED_IN, 0.0, 0.0); break;
-      }
-    } else {
-      if ( state==IDLE ) {
-        dock_detector = 0;
-        rotated = 0.0;
-        setStateVel(SCAN, 0.00, 0.66); break;
-      }
-      if ( state==SCAN ) {
-        rotated += pose_update.heading()/(2.0*M_PI);
-        std::ostringstream oss;
-        oss << "rotated: " << std::fixed << std::setprecision(2) << std::setw(4) << rotated;
-        debug_str = oss.str();
-        if( std::abs(rotated) > 1.6 ) {
-          setStateVel(FIND_STREAM, 0.0, 0.0); break;
-        }
-        if (  signal_filt[1]&(FAR_LEFT  + NEAR_LEFT )) dock_detector--;
-        if (  signal_filt[1]&(FAR_RIGHT + NEAR_RIGHT)) dock_detector++;
-        if ( (signal_filt[1]&FAR_CENTER) || (signal_filt[1]&NEAR_CENTER) ) {
-          setStateVel(ALIGNED, 0.05, 0.00); break;
-        } else if ( signal_filt[1] ) {
-          setStateVel(SCAN, 0.00, 0.10); break;
-        } else {
-          setStateVel(SCAN, 0.00, 0.66); break;
-        }
-
-      } else if (state==ALIGNED || state==ALIGNED_FAR || state==ALIGNED_NEAR) {
-        if ( signal_filt[1] ) {
-          if ( signal_filt[1]&NEAR )
-          {
-            if ( ((signal_filt[1]&NEAR) == NEAR_CENTER) || ((signal_filt[1]&NEAR) == NEAR) ) { setStateVel(ALIGNED_NEAR, 0.05,  0.0); debug_str = "AlignedNearCenter"; break; }
-            if (   signal_filt[1]&NEAR_LEFT  ) {                                               setStateVel(ALIGNED_NEAR, 0.05,  0.1); debug_str = "AlignedNearLeft"  ; break; }
-            if (   signal_filt[1]&NEAR_RIGHT ) {                                               setStateVel(ALIGNED_NEAR, 0.05, -0.1); debug_str = "AlignedNearRight" ; break; }
-          }
-          if ( signal_filt[1]&FAR )
-          {
-            if ( ((signal_filt[1]&FAR) == FAR_CENTER) || ((signal_filt[1]&FAR) == FAR) ) { setStateVel(ALIGNED_FAR, 0.1,  0.0); debug_str = "AlignedFarCenter"; break; }
-            if (   signal_filt[1]&FAR_LEFT  ) {                                            setStateVel(ALIGNED_FAR, 0.1,  0.3); debug_str = "AlignedFarLeft"  ; break; }
-            if (   signal_filt[1]&FAR_RIGHT ) {                                            setStateVel(ALIGNED_FAR, 0.1, -0.3); debug_str = "AlignedFarRight" ; break; }
-          }
-          dock_detector = 0;
-          rotated = 0.0;
-          setStateVel(SCAN, 0.00, 0.66); break;
-        } else {
-          debug_str = "lost signals";
-          setStateVel(LOST, 0.00, 0.00); break;
-        }
-      } else if (state==FIND_STREAM) {
-        if (dock_detector > 0 ) { // robot is placed in right side of docking station
-          //turn  right , negative direction til get right signal from left sensor
-          if (signal_filt[2]&(FAR_RIGHT+NEAR_RIGHT)) {
-            setStateVel(GET_STREAM, 0.05, 0.0); break;
-          } else {
-            setStateVel(FIND_STREAM, 0.0, -0.33); break;
-          }
-        } else if (dock_detector < 0 ) { // robot is placed in left side of docking station
-          //turn left, positive direction till get left signal from right sensor
-          if (signal_filt[0]&(FAR_LEFT+NEAR_LEFT)) {
-            setStateVel(GET_STREAM, 0.05, 0.0); break;
-          } else {
-            setStateVel(FIND_STREAM, 0.0, 0.33); break;
-          }
-        }
-      } else if (state==GET_STREAM) {
-        if (dock_detector > 0) { //robot is placed in right side of docking station
-          if (signal_filt[2]&(FAR_LEFT+NEAR_LEFT)) {
-            dock_detector = 0;
-            rotated = 0.0;
-            setStateVel(SCAN, 0.0, 0.10); break;
-          } else {
-            setStateVel(GET_STREAM, 0.05, 0.0); break;
-          }
-        } else if (dock_detector < 0) { // robot is placed in left side of docking station
-          if (signal_filt[0]&(FAR_RIGHT+NEAR_RIGHT)) {
-            dock_detector = 0;
-            rotated = 0.0;
-            setStateVel(SCAN, 0.0, 0.10); break;
-          } else {
-            setStateVel(GET_STREAM, 0.05, 0.0); break;
-          }
-        }
-      } else {
-        dock_detector = 0;
-        rotated = 0.0;
-        setStateVel(SCAN, 0.00, 0.66); break;
-      }
-    }
-    setStateVel(UNKNOWN, 0.00, 0.00); break;
-  } while(0);
-
-  //debug_stream << std::fixed << std::setprecision(4)
-  debug_stream << "[vx: " << std::setw(7) << vx << ", wz: " << std::setw(7) << wz << "]";
-  debug_stream << "[S: " << state_str << "]";
-  debug_stream << "[" << debug_str << "]";
-  //debug_stream << std::endl;
-  debug_output = debug_stream.str();
-
-  //std::cout << debug_output << std::endl;;
 
   velocityCommands(vx, wz);
-//  this->vx = vx; this->wz = wz;
+
+  // for easy debugging
+  generateDebugMessage(signal_filt, bumper, charger, pose_update, debug_str);
+
   return;
 }
+
+/**
+ * @brief compute pose update from previouse pose and current pose
+ *
+ * @param pose update. this variable get filled after this function 
+ * @param pose - current pose
+ **/
+void DockDrive::computePoseUpdate(ecl::Pose2D<double>& pose_update, const ecl::Pose2D<double>& pose)
+{
+  double dx = pose.x() - pose_priv.x();
+  double dy = pose.y() - pose_priv.y();
+  pose_update.x( std::sqrt( dx*dx + dy*dy ) );
+  pose_update.heading( pose.heading() - pose_priv.heading() );
+  //std::cout << pose_diff << "=" << pose << "-" << pose_priv << " | " << pose_update << std::endl;
+  pose_priv = pose;
+
+}
+
+
+/**
+ * @breif pushing into signal into signal window. and go through the signal window to find what has detected
+ *
+ * @param signal_filt - this get filled out after the function. 
+ * @param signal - the raw data from robot
+ **/
+
+void DockDrive::filterIRSensor(std::vector<unsigned char>& signal_filt,const std::vector<unsigned char> &signal)
+{
+  //dock_ir signals filtering
+  past_signals.push_back(signal);
+  while (past_signals.size() > signal_window) {
+    past_signals.erase( past_signals.begin(), past_signals.begin() + past_signals.size() - signal_window);
+  }
+
+  for ( unsigned int i = 0; i < past_signals.size(); i++) {
+    if (signal_filt.size() != past_signals[i].size()) 
+      continue;
+    for (unsigned int j = 0; j < signal_filt.size(); j++)
+      signal_filt[j] |= past_signals[i][j];
+  }
+}
+
 
 void DockDrive::velocityCommands(const double &vx_, const double &wz_) {
   // vx: in m/s
@@ -338,14 +188,112 @@ void DockDrive::velocityCommands(const double &vx_, const double &wz_) {
   wz = wz_;
 }
 
-std::string DockDrive::binary(unsigned char number) const {
-  std::string ret;
-  for( unsigned int i=0;i<6; i++){
-    if (number&1) ret = "1" + ret;
-    else          ret = "0" + ret;
-    number = number >> 1;
+/****************************************************
+ * @brief process bumper and charge event. If robot is charging, terminates auto dokcing process. If it bumps something, Set the next state as bumped and go backward 
+ *
+ * @bumper - indicates whether bumper has pressed
+ * @charger - indicates whether robot is charging
+ *
+ ****************************************************/
+void DockDrive::processBumpChargeEvent(const unsigned char& bumper, const unsigned char& charger) {
+  RobotDockingState::State new_state;
+  if(charger && bumper) {
+    new_state = RobotDockingState::BUMPED_DOCK;
+    setStateVel(new_state, -0.01, 0.0); 
   }
-  return ret;
+  else if(charger) {
+    if(dock_stabilizer++ == 0) {
+      new_state = RobotDockingState::DOCKED_IN;
+      setStateVel(new_state, 0.0, 0.0); 
+    }
+    else if(dock_stabilizer > 20) {
+      dock_stabilizer = 0;
+      is_enabled = false;
+      can_run = false;
+      new_state = RobotDockingState::DONE;
+      setStateVel(new_state, 0.0, 0.0);
+    }
+    else {
+      new_state = RobotDockingState::DOCKED_IN;
+      setStateVel(new_state, 0.0, 0.0); 
+    }
+  }
+  else if(bumper) {
+    new_state = RobotDockingState::BUMPED;
+    setStateVel(new_state, -0.05, 0.0);
+    bump_remainder = 0;
+  }
+  state_str = ROBOT_STATE_STR[new_state];
 }
 
-} // namespace kobuki
+/*************************
+ * @breif processing. algorithms; transforma to velocity command
+ *
+ * @param dock_ir signal
+ * @param bumper sensor
+ * @param charger sensor
+ * @param pose_update
+ *
+ *************************/
+void DockDrive::updateVelocity(const std::vector<unsigned char>& signal_filt, const ecl::Pose2D<double>& pose_update, std::string& debug_str)
+{
+  std::ostringstream oss;
+  RobotDockingState::State current_state, new_state;
+  double new_vx = 0.0;
+  double new_wz = 0.0;
+
+  // determine the current state based on ir and the previous state
+  // common transition. idle -> scan -> find_stream -> get_stream -> scan -> aligned_far -> aligned_near -> docked_in -> done
+
+  current_state = new_state = state;
+  switch((unsigned int)current_state) {
+    case RobotDockingState::IDLE:
+      idle(new_state, new_vx, new_wz);
+      break;
+    case RobotDockingState::SCAN:
+      scan(new_state, new_vx, new_wz, signal_filt, pose_update, debug_str);
+      break;
+    case RobotDockingState::FIND_STREAM:
+      find_stream(new_state, new_vx, new_wz, signal_filt);
+      break;
+    case RobotDockingState::GET_STREAM:
+      get_stream(new_state, new_vx, new_wz, signal_filt);
+      break;
+    case RobotDockingState::ALIGNED:
+    case RobotDockingState::ALIGNED_FAR:
+    case RobotDockingState::ALIGNED_NEAR:
+      aligned(new_state, new_vx, new_wz, signal_filt, debug_str);
+      break;
+    case RobotDockingState::BUMPED:
+      bumped(new_state, new_vx, new_wz, bump_remainder);
+      break;
+    default:
+      oss << "Wrong state : " << current_state;
+      debug_str = oss.str();
+      break;
+  }
+
+  setStateVel(new_state, new_vx, new_wz);
+  state_str = ROBOT_STATE_STR[new_state];
+}
+
+/*************************
+ * @breif Check if any ir sees the given state signal from dock station 
+ * 
+ * @param filtered signal 
+ * @param dock ir state
+ *
+ * @ret true or false
+ *************************/
+bool DockDrive::validateSignal(const std::vector<unsigned char>& signal_filt, const unsigned int state)
+{
+  unsigned int i;
+  for(i = 0; i < signal_filt.size(); i++)
+  {
+    if(signal_filt[i] & state)
+      return true;
+  }
+  return false;
+}
+
+} // kobuki namespace
