@@ -33,7 +33,7 @@ A bytestream can be divided into 4 fields; Headers, Length, Payload and Checksum
 
 @subsection enHeader Header
 
-Two bytes of headers, header 0 and hader 1, are fixed value for both bytestreams, commands and feedback data. This headers are used to detect the starting point of bytestream.
+Two bytes of headers, header 0 and header 1, are fixed value for both bytestreams, commands and feedback data. This headers are used to detect the starting point of bytestream.
 
 <br>
 
@@ -268,7 +268,7 @@ UDID is unique to device. so can be used to identify on multiple robots.
 <tr><th>Data</th><td>Request flags</td><td align="center">2</td><td align="center"></td><td></td><td>Set the flags to request extra data<br>0x01 for Hardware Version<br>0x02 for Firmware Version<br>0x08 for Unique Device ID</td></tr>
 </table>
 
-@sa @ref enHardwareVersion @ref enFirmwareVersion,  @ref enUniqueDeviceIDentifier
+@sa @ref enHardwareVersion, @ref enFirmwareVersion,  @ref enUniqueDeviceIDentifier
 
 <br>
 
@@ -422,7 +422,7 @@ Kobuki's docking station has 3 <a href="http://en.wikipedia.org/wiki/Infrared">I
 
 @subsection enInertialSensorData Inertial Sensor Data
 
-Inertial sensor data. Only 1 axis gyro data only available.
+Inertial sensor data. Z-axis gyro data only available.
 
 <table>
 <tr><th></th><th>Name</th><th width="40">Size</th><th width="40">Value</th><th>Value in Hex</th><th>Description</th></tr>
