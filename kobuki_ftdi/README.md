@@ -14,7 +14,7 @@ Kobuki ftdi
 
 ### Trouble Shooting ###
 
-# What to check if kobuki does not bring up properly
+##### What to check if kobuki does not bring up properly #####
 
 * Does kobuki stream data?
 
@@ -23,6 +23,7 @@ Kobuki ftdi
 * Does kobuki appear as USB device?
 
 > lsusb # See if there is "0403:6001 Future Technology Devices International, Ltd FT232 USB-Serial (UART) IC"
+
 > dmesg # See what happen when kobuki usb is plugged.
 
 * Is there /dev/kobuki?
