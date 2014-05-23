@@ -2,8 +2,8 @@
 Changelog for package kobuki_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.5.4 (2014-05-23)
+------------------
 * Fixed typos.
 * Fixed typos
 * updating hydro-devel to hydro
