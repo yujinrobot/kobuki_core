@@ -2,6 +2,17 @@
 Changelog for package kobuki_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fixed typos.
+* Fixed typos
+* updating hydro-devel to hydro
+* kobuki_driver : Updated doxygen. Issue `#10 <https://github.com/yujinrobot/kobuki_core/issues/10>`_.
+* kobuki_driver : Fixed a typo on doxygen.
+* kobuki_driver : Updated doxygen document.
+* kobuki_driver : Updated doxygen document.
+* Contributors: Jihoon Lee, Younghun Ju
+
 0.5.3 (2013-09-06)
 ------------------
 * Updated doxygen documentation.

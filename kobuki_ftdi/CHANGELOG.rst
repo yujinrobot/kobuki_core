@@ -2,6 +2,11 @@
 Changelog for package kobuki_ftdi
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* kobuki_ftdi : Updated doxygen document.
+* Contributors: Younghun Ju
+
 0.5.3 (2013-09-06)
 ------------------
 
