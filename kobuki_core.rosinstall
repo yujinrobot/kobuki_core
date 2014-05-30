@@ -6,10 +6,11 @@
 
 # Kobuki Core / Yujin stacks
 
-- git: {local-name: catkin,         version: 0.5.73,      uri: 'https://github.com/ros/catkin.git'}
-- git: {local-name: ecl_tool,       version: 0.60.0,      uri: 'https://github.com/stonier/ecl_tools.git'}
-- git: {local-name: ecl_lite,       version: 0.60.0,      uri: 'https://github.com/stonier/ecl_lite.git'}
-- git: {local-name: ecl_core,       version: 0.60.5,      uri: 'https://github.com/stonier/ecl_core.git'}
-- git: {local-name: ecl_navigation, version: 0.60.0,      uri: 'https://github.com/stonier/ecl_navigation.git'}
-- git: {local-name: kobuki_core,    version: hydro-devel, uri: 'https://github.com/yujinrobot/kobuki_core.git'}
+- git: {local-name: catkin,         version: indigo-devel, uri: 'https://github.com/ros/catkin.git'}
+- git: {local-name: cmake_modules,  version: 0.3-devel,    uri: 'https://github.com/ros/cmake_modules.git'}
+- git: {local-name: ecl_tool,       version: indigo,       uri: 'https://github.com/stonier/ecl_tools.git'}
+- git: {local-name: ecl_lite,       version: indigo,       uri: 'https://github.com/stonier/ecl_lite.git'}
+- git: {local-name: ecl_core,       version: indigo,       uri: 'https://github.com/stonier/ecl_core.git'}
+- git: {local-name: ecl_navigation, version: indigo,       uri: 'https://github.com/stonier/ecl_navigation.git'}
+- git: {local-name: kobuki_core,    version: indigo,       uri: 'https://github.com/yujinrobot/kobuki_core.git'}
 
