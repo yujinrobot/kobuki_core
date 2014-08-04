@@ -2,6 +2,16 @@
 Changelog for package kobuki_ftdi
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix compilation.
+  - fix the names of the pkg-config libraries of libusb and libftdi. I checked on Ubuntu and OS X.
+  - ftdi-eeprom is not a library and has no pkg-config file.
+* Update the readme in kobuki_ftdi
+* Create README.md
+* kobuki_ftdi : Updated doxygen document.
+* Contributors: Jihoon Lee, Nikolaus Demmel, Younghun Ju
+
 0.5.3 (2013-09-06)
 ------------------
 

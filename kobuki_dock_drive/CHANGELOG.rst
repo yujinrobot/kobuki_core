@@ -2,6 +2,11 @@
 Changelog for package kobuki_dock_drive
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Redevelopment of kobuki dock drive algorithm.
+* Contributors: Jihoon Lee
+
 0.5.3 (2013-09-06)
 ------------------
 
