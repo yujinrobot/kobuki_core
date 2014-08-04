@@ -2,8 +2,8 @@
 Changelog for package kobuki_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.0 (2014-08-04)
+------------------
 * add linear and angular test plot image
 * kobuki_driver : Updated doxygen. Issue `#10 <https://github.com/yujinrobot/kobuki_core/issues/10>`_.
 * Contributors: Younghun Ju, jihoonl
