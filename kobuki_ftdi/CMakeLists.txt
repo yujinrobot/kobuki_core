@@ -9,7 +9,6 @@ pkg_search_module(REQUIRED libftdi)
 
 catkin_package(
    INCLUDE_DIRS include
-   LIBRARIES kobuki_ros kobuki_nodelet
    CATKIN_DEPENDS ecl_command_line
    DEPENDS libusb libftdi
 )
