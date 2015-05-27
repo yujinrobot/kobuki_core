@@ -2,6 +2,11 @@
 Changelog for package kobuki_ftdi
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* remove kobuki_ros kobuki_nodelet libaries export in catkin_package closes `#16 <https://github.com/yujinrobot/kobuki_core/issues/16>`_
+* Contributors: Jihoon Lee
+
 0.6.0 (2014-08-04)
 ------------------
 * Fix compilation.
