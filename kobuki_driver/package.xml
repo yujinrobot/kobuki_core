@@ -16,6 +16,7 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
+  <build_depend>ecl_build</build_depend>
   <build_depend>ecl_mobile_robot</build_depend>
   <build_depend>ecl_converters</build_depend>
   <build_depend>ecl_devices</build_depend>

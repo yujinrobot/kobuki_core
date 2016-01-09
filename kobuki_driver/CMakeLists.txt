@@ -1,14 +1,54 @@
+##############################################################################
+# Cmake
+##############################################################################
+
 cmake_minimum_required(VERSION 2.8.3)
 project(kobuki_driver)
-find_package(catkin REQUIRED COMPONENTS ecl_mobile_robot ecl_converters ecl_devices ecl_geometry ecl_sigslots ecl_time ecl_command_line)
 
-catkin_package(
-   INCLUDE_DIRS include
-   LIBRARIES kobuki
-   CATKIN_DEPENDS ecl_mobile_robot ecl_converters ecl_devices ecl_geometry ecl_sigslots ecl_time ecl_command_line
+##############################################################################
+# Catkin
+##############################################################################
+
+find_package(catkin
+    REQUIRED
+    COMPONENTS
+        ecl_build
+        ecl_mobile_robot
+        ecl_converters
+        ecl_devices
+        ecl_geometry
+        ecl_sigslots
+        ecl_time
+        ecl_command_line
 )
 
+##############################################################################
+# Exports
+##############################################################################
+
+catkin_package(
+    INCLUDE_DIRS include
+    LIBRARIES kobuki
+    CATKIN_DEPENDS
+        ecl_command_line
+        ecl_converters
+        ecl_devices
+        ecl_geometry
+        ecl_mobile_robot
+        ecl_sigslots
+        ecl_time
+)
+
+##############################################################################
+# Project Configuration
+##############################################################################
+
+ecl_enable_cxx11_compiler()
 include_directories(include ${catkin_INCLUDE_DIRS})
+
+##############################################################################
+# Sources
+##############################################################################
 
 add_subdirectory(src)
 
