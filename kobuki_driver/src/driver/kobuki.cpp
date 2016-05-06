@@ -10,7 +10,7 @@
  ** Includes
  *****************************************************************************/
 
-#include <stdexcept>
+#include <cmath>
 #include <ecl/math.hpp>
 #include <ecl/geometry/angle.hpp>
 #include <ecl/time/sleep.hpp>
@@ -18,6 +18,7 @@
 #include <ecl/sigslots.hpp>
 #include <ecl/geometry/angle.hpp>
 #include <ecl/time/timestamp.hpp>
+#include <stdexcept>
 #include "../../include/kobuki_driver/kobuki.hpp"
 #include "../../include/kobuki_driver/packet_handler/payload_headers.hpp"
 
@@ -273,7 +274,7 @@ void Kobuki::spin()
             if( !inertia.deserialise(data_buffer) ) { fixPayload(data_buffer); break; }
 
             // Issue #274: use first imu reading as zero heading; update when reseting odometry
-            if (isnan(heading_offset) == true)
+            if (std::isnan(heading_offset) == true)
               heading_offset = (static_cast<double>(inertia.data.angle) / 100.0) * ecl::pi / 180.0;
             break;
           case Header::Cliff:
