@@ -44,7 +44,7 @@ public:
 
   bool serialise(ecl::PushAndPop<unsigned char> & byteStream)
   {
-    buildBytes(Header::Cliff, byteStream);
+    buildBytes((unsigned char)Header::Cliff, byteStream);
     buildBytes(length, byteStream);
     buildBytes(data.bottom[0], byteStream);
     buildBytes(data.bottom[1], byteStream);
