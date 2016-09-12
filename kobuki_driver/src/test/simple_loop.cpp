@@ -13,7 +13,7 @@
 #include <csignal>
 #include <ecl/time.hpp>
 #include <ecl/sigslots.hpp>
-#include <ecl/geometry/pose2d.hpp>
+#include <ecl/geometry/legacy_pose2d.hpp>
 #include <ecl/linear_algebra.hpp>
 #include "kobuki_driver/kobuki.hpp"
 
@@ -42,7 +42,7 @@ public:
   }
 
   void processStreamData() {
-    ecl::Pose2D<double> pose_update;
+    ecl::LegacyPose2D<double> pose_update;
     ecl::linear_algebra::Vector3d pose_update_rates;
     kobuki.updateOdometry(pose_update, pose_update_rates);
     pose *= pose_update;
@@ -61,13 +61,13 @@ public:
     else { kobuki.setBaseControl(0.3, 0.0); return; }
   }
 
-  ecl::Pose2D<double> getPose() {
+  ecl::LegacyPose2D<double> getPose() {
     return pose;
   }
 
 private:
   double dx, dth;
-  ecl::Pose2D<double> pose;
+  ecl::LegacyPose2D<double> pose;
   kobuki::Kobuki kobuki;
   ecl::Slot<> slot_stream_data;
 };
@@ -93,7 +93,7 @@ int main(int argc, char** argv)
   KobukiManager kobuki_manager;
 
   ecl::Sleep sleep(1);
-  ecl::Pose2D<double> pose;
+  ecl::LegacyPose2D<double> pose;
   try {
     while (!shutdown_req){
       sleep();

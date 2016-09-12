@@ -46,7 +46,7 @@
 #include <ecl/sigslots.hpp>
 #include <ecl/exceptions.hpp>
 #include <ecl/linear_algebra.hpp>
-#include <ecl/geometry/pose2d.hpp>
+#include <ecl/geometry/legacy_pose2d.hpp>
 #include "kobuki_driver/kobuki.hpp"
 
 /*****************************************************************************
@@ -80,11 +80,11 @@ public:
   /*********************
    ** Accessor
    **********************/
-  ecl::Pose2D<double> getPose();
+  ecl::LegacyPose2D<double> getPose();
 
 private:
   double vx, wz;
-  ecl::Pose2D<double> pose;
+  ecl::LegacyPose2D<double> pose;
   kobuki::Kobuki kobuki;
   ecl::Slot<> slot_stream_data;
 
@@ -356,7 +356,7 @@ void KobukiManager::resetVelocity()
 }
 
 void KobukiManager::processStreamData() {
-  ecl::Pose2D<double> pose_update;
+  ecl::LegacyPose2D<double> pose_update;
   ecl::linear_algebra::Vector3d pose_update_rates;
   kobuki.updateOdometry(pose_update, pose_update_rates);
   pose *= pose_update;
@@ -369,7 +369,7 @@ void KobukiManager::processStreamData() {
   kobuki.setBaseControl(vx, wz);
 }
 
-ecl::Pose2D<double> KobukiManager::getPose() {
+ecl::LegacyPose2D<double> KobukiManager::getPose() {
   return pose;
 }
 
@@ -395,7 +395,7 @@ int main(int argc, char** argv)
   kobuki_manager.init();
 
   ecl::Sleep sleep(1);
-  ecl::Pose2D<double> pose;
+  ecl::LegacyPose2D<double> pose;
   try {
     while (!shutdown_req){
       sleep();
