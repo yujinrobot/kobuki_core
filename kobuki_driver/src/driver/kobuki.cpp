@@ -459,7 +459,7 @@ void Kobuki::getWheelJointStates(double &wheel_left_angle, double &wheel_left_an
  * @param pose_update : return the pose updates in this variable.
  * @param pose_update_rates : return the pose update rates in this variable.
  */
-void Kobuki::updateOdometry(ecl::Pose2D<double> &pose_update, ecl::linear_algebra::Vector3d &pose_update_rates)
+void Kobuki::updateOdometry(ecl::LegacyPose2D<double> &pose_update, ecl::linear_algebra::Vector3d &pose_update_rates)
 {
   diff_drive.update(core_sensors.data.time_stamp, core_sensors.data.left_encoder, core_sensors.data.right_encoder,
                       pose_update, pose_update_rates);

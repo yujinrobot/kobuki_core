@@ -52,7 +52,7 @@ DiffDrive::DiffDrive() :
 void DiffDrive::update(const uint16_t &time_stamp,
                        const uint16_t &left_encoder,
                        const uint16_t &right_encoder,
-                       ecl::Pose2D<double> &pose_update,
+                       ecl::LegacyPose2D<double> &pose_update,
                        ecl::linear_algebra::Vector3d &pose_update_rates) {
   state_mutex.lock();
   static bool init_l = false;

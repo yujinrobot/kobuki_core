@@ -56,7 +56,7 @@ namespace kobuki {
 ** Implementation
 *****************************************************************************/
 DockDrive::DockDrive() :
-  is_enabled(false), can_run(false) 
+  is_enabled(false), can_run(false)
   , state(RobotDockingState::IDLE), state_str("IDLE")
   , vx(0.0), wz(0.0)
   , bump_remainder(0)
@@ -114,14 +114,14 @@ void DockDrive::modeShift(const std::string& mode)
 void DockDrive::update(const std::vector<unsigned char> &signal
                 , const unsigned char &bumper
                 , const unsigned char &charger
-                , const ecl::Pose2D<double>& pose) {
+                , const ecl::LegacyPose2D<double>& pose) {
 
-  ecl::Pose2D<double> pose_update;
+  ecl::LegacyPose2D<double> pose_update;
   std::vector<unsigned char> signal_filt(signal.size(), 0);
   std::string debug_str;
 
   // process bumper and charger event first
-  // docking algorithm terminates here 
+  // docking algorithm terminates here
   if(bumper || charger) {
     processBumpChargeEvent(bumper, charger);
   }
@@ -142,10 +142,10 @@ void DockDrive::update(const std::vector<unsigned char> &signal
 /**
  * @brief compute pose update from previouse pose and current pose
  *
- * @param pose update. this variable get filled after this function 
+ * @param pose update. this variable get filled after this function
  * @param pose - current pose
  **/
-void DockDrive::computePoseUpdate(ecl::Pose2D<double>& pose_update, const ecl::Pose2D<double>& pose)
+void DockDrive::computePoseUpdate(ecl::LegacyPose2D<double>& pose_update, const ecl::LegacyPose2D<double>& pose)
 {
   double dx = pose.x() - pose_priv.x();
   double dy = pose.y() - pose_priv.y();
@@ -160,7 +160,7 @@ void DockDrive::computePoseUpdate(ecl::Pose2D<double>& pose_update, const ecl::P
 /**
  * @breif pushing into signal into signal window. and go through the signal window to find what has detected
  *
- * @param signal_filt - this get filled out after the function. 
+ * @param signal_filt - this get filled out after the function.
  * @param signal - the raw data from robot
  **/
 
@@ -173,7 +173,7 @@ void DockDrive::filterIRSensor(std::vector<unsigned char>& signal_filt,const std
   }
 
   for ( unsigned int i = 0; i < past_signals.size(); i++) {
-    if (signal_filt.size() != past_signals[i].size()) 
+    if (signal_filt.size() != past_signals[i].size())
       continue;
     for (unsigned int j = 0; j < signal_filt.size(); j++)
       signal_filt[j] |= past_signals[i][j];
@@ -189,7 +189,7 @@ void DockDrive::velocityCommands(const double &vx_, const double &wz_) {
 }
 
 /****************************************************
- * @brief process bumper and charge event. If robot is charging, terminates auto dokcing process. If it bumps something, Set the next state as bumped and go backward 
+ * @brief process bumper and charge event. If robot is charging, terminates auto dokcing process. If it bumps something, Set the next state as bumped and go backward
  *
  * @bumper - indicates whether bumper has pressed
  * @charger - indicates whether robot is charging
@@ -199,12 +199,12 @@ void DockDrive::processBumpChargeEvent(const unsigned char& bumper, const unsign
   RobotDockingState::State new_state;
   if(charger && bumper) {
     new_state = RobotDockingState::BUMPED_DOCK;
-    setStateVel(new_state, -0.01, 0.0); 
+    setStateVel(new_state, -0.01, 0.0);
   }
   else if(charger) {
     if(dock_stabilizer++ == 0) {
       new_state = RobotDockingState::DOCKED_IN;
-      setStateVel(new_state, 0.0, 0.0); 
+      setStateVel(new_state, 0.0, 0.0);
     }
     else if(dock_stabilizer > 20) {
       dock_stabilizer = 0;
@@ -215,7 +215,7 @@ void DockDrive::processBumpChargeEvent(const unsigned char& bumper, const unsign
     }
     else {
       new_state = RobotDockingState::DOCKED_IN;
-      setStateVel(new_state, 0.0, 0.0); 
+      setStateVel(new_state, 0.0, 0.0);
     }
   }
   else if(bumper) {
@@ -235,7 +235,7 @@ void DockDrive::processBumpChargeEvent(const unsigned char& bumper, const unsign
  * @param pose_update
  *
  *************************/
-void DockDrive::updateVelocity(const std::vector<unsigned char>& signal_filt, const ecl::Pose2D<double>& pose_update, std::string& debug_str)
+void DockDrive::updateVelocity(const std::vector<unsigned char>& signal_filt, const ecl::LegacyPose2D<double>& pose_update, std::string& debug_str)
 {
   std::ostringstream oss;
   RobotDockingState::State current_state, new_state;
@@ -278,9 +278,9 @@ void DockDrive::updateVelocity(const std::vector<unsigned char>& signal_filt, co
 }
 
 /*************************
- * @breif Check if any ir sees the given state signal from dock station 
- * 
- * @param filtered signal 
+ * @breif Check if any ir sees the given state signal from dock station
+ *
+ * @param filtered signal
  * @param dock ir state
  *
  * @ret true or false

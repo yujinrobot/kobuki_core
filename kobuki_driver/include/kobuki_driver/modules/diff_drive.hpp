@@ -20,6 +20,7 @@
 #include <vector>
 #include <climits>
 #include <stdint.h>
+#include <ecl/geometry/legacy_pose2d.hpp>
 #include <ecl/mobile_robot.hpp>
 #include <ecl/threads/mutex.hpp>
 #include "../macros.hpp"
@@ -41,7 +42,7 @@ public:
   void update(const uint16_t &time_stamp,
               const uint16_t &left_encoder,
               const uint16_t &right_encoder,
-              ecl::Pose2D<double> &pose_update,
+              ecl::LegacyPose2D<double> &pose_update,
               ecl::linear_algebra::Vector3d &pose_update_rates);
   void reset();
   void getWheelJointStates(double &wheel_left_angle, double &wheel_left_angle_rate,
