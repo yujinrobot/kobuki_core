@@ -1,6 +1,6 @@
 <package>
   <name>kobuki_dock_drive</name>
-  <version>0.6.4</version>
+  <version>0.6.5</version>
   <description>
 	    Dock driving library for Kobuki. Users owning a docking station for Kobuki 
 	    can use this tool to develop autonomous docking drive algorithms.
