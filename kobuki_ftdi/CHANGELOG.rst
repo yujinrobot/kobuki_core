@@ -2,8 +2,8 @@
 Changelog
 =========
 
-Forthcoming
------------
+0.7.3 (2017-02-23)
+------------------
 * bugfix the missing prefix in the pkg_search_module calls
 
 0.6.1 (2015-05-27)
