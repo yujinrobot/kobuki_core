@@ -2,8 +2,8 @@
 Changelog
 =========
 
-Forthcoming
------------
+0.7.4 (2017-02-23)
+------------------
 * drop spurious debugging cmake message that was throwing warnings
 
 0.7.2 (2016-11-09)
