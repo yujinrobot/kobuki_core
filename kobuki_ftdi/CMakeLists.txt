@@ -4,8 +4,8 @@ find_package(catkin REQUIRED COMPONENTS ecl_command_line)
 
 # pkg-config packages
 find_package(PkgConfig)
-pkg_search_module(REQUIRED libusb)
-pkg_search_module(REQUIRED libftdi)
+pkg_search_module(libusb REQUIRED libusb)
+pkg_search_module(libftdi REQUIRED libftdi)
 
 catkin_package(
    INCLUDE_DIRS include

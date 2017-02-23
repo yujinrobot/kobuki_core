@@ -1,6 +1,10 @@
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Changelog for package kobuki_ftdi
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+=========
+Changelog
+=========
+
+Forthcoming
+-----------
+* bugfix the missing prefix in the pkg_search_module calls
 
 0.6.1 (2015-05-27)
 ------------------
