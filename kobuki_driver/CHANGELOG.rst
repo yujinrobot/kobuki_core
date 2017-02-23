@@ -2,6 +2,10 @@
 Changelog
 =========
 
+Forthcoming
+-----------
+* drop spurious debugging cmake message that was throwing warnings
+
 0.7.2 (2016-11-09)
 ------------------
 * Pose2D -> LegacyPose2D
