@@ -2,8 +2,8 @@
 Changelog
 =========
 
-Forthcoming
------------
+0.7.5 (2017-03-03)
+------------------
 * bugfixing the missing pkg-config dependency
 
 0.7.3 (2017-02-23)
