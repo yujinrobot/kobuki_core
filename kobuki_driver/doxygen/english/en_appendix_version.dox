@@ -8,7 +8,7 @@
          Overview
 ------------------------------->
 
-@section enOverview Overview
+@section enAppendixVersionOverview Overview
 
 If you want to know version information of kobuki for compatibility checking and introspection, you can just run version_info program.
 

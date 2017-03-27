@@ -8,7 +8,7 @@
          Overview
 ------------------------------->
 
-@section enOverview Overview
+@section enAppendixProtocolOverview Overview
 
 The @ref kobuki::Kobuki "kobuki driver" communicates with the robot by using predefined protocol. In general, the driver sends the commands to the robot and the robot sends some feedback data or sensor readings. These commands and feedback data are converted into bytestreams for communication via serial interface. The protocol specifies that rules and forms of bytestreams.
 

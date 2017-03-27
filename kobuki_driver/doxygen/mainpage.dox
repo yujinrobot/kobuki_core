@@ -3,9 +3,12 @@
 \htmlinclude manifest.html
 
 We are currently only supporting english documentation. If you'd like to translate, feel free
-to modify the contents of https://github.com/yujinrobot/kobuki_core/tree/hydro-devel/kobuki_driver/doxygen
-and send us a pull request.
+to modify the
+<a href="https://github.com/yujinrobot/kobuki_core/tree/devel/kobuki_driver/doxygen">source</a>
+and make a pull request.
 
 - @ref enMainPage "English Guides"
+
+\note This documentation is synchronised for use with the latest sources.
 
 */

@@ -2,7 +2,7 @@
 
 @page enSimpleExample Simple Control Loop Example
 
-@section Overview
+@section enSimpleExampleOverview Overview
 
 This example will show you how to process kobuki's pose data and send wheel commands to robot.
 
@@ -267,5 +267,10 @@ int main(int argc, char** argv)
 
 Accumulated pose will be printed in every seconds.
 If you pressed ctrl+c keys, then robot will stop and program will be terminated.
+
+@section enSimpleExampleMoreComplicated More Complicated Example
+
+A far more detailed implementation can be found for the
+<a href="https://github.com/yujinrobot/kobuki/tree/devel/kobuki_node">kobuki_node</a> that runs within the ROS framework.
 
 **/

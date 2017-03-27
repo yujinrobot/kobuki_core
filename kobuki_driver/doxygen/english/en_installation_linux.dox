@@ -2,7 +2,7 @@
 
 @page enInstallationLinuxGuide Installation - Linux
 
-@section Overview
+@section enInstallationLinuxOverview Overview
 
 This section describes the installation process for Linux.
 
@@ -11,11 +11,11 @@ This section describes the installation process for Linux.
 Linux people who want to compile Kobuki driver, but not use ros
 
 
-@section Procedure 
+@section Procedure
 
 @subsection prereq Prerequirements
 
-We use catkin to build. First of all you need to install some basic dependencies: 
+We use catkin to build. First of all you need to install some basic dependencies:
 
 - <i>cmake</i>      - A cross-platform, open-source build system.
 - <i>python</i>     - Python is a general-purpose, interpreted high-level programming language.
@@ -28,12 +28,12 @@ We use catkin to build. First of all you need to install some basic dependencies
   sudo apt-get install python-wstool cmake python-catkin-pkg python-empy python-nose python-setuptools build-essential
 @endcode
 
-If you are <b>not</b> on Ubuntu you can typically find cmake, python in your system repos and at worst, you can install python modules 
-from <a href="http://pypi.python.org/pypi">PyPi</a> via pip. 
+If you are <b>not</b> on Ubuntu you can typically find cmake, python in your system repos and at worst, you can install python modules
+from <a href="http://pypi.python.org/pypi">PyPi</a> via pip.
 
 Refer to the <a href="http://ros.org/wiki/catkin">Catkin documentation</a> for more details.
 
-@subsection catkin Catkin workspace 
+@subsection catkin Catkin workspace
 
 Next we must prepare a catkin workspace.
 
@@ -45,7 +45,7 @@ Next we must prepare a catkin workspace.
   catkin_make
   cd build; make install
 @endcode
-  
+
 The utility catkin_make is just a wrapper around cmake/make. You can just as easily call cmake ../src with the appropriate variables
 for CMAKE_INSTALL_PREFIX amongst others and proceed from there. catkin_make has a few options to allow you to indirectly set these
 cmake variables (again, CMAKE_INSTALL_PREFIX is a useful one, otherwise it defaults to ./install).
