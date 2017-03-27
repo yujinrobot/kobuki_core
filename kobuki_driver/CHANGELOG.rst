@@ -2,6 +2,10 @@
 Changelog
 =========
 
+0.7.6 (2017-03-27)
+------------------
+* doxygen updates
+
 0.7.4 (2017-02-23)
 ------------------
 * drop spurious debugging cmake message that was throwing warnings
