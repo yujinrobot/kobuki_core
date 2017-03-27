@@ -9,6 +9,7 @@ and make a pull request.
 
 - @ref enMainPage "English Guides"
 
-\note This documentation is synchronised for use with the latest sources.
+If you find any problems with this documentation, please submit issues to the
+<a href="https://github.com/yujinrobot/kobuki_core/issues">kobuki_core issue tracker</a>.
 
 */

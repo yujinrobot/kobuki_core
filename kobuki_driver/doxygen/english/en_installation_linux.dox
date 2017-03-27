@@ -39,16 +39,15 @@ Next we must prepare a catkin workspace.
 
 @code
   mkdir kobuki_core
-  wstool init -j5 kobuki_core/src https://raw.github.com/yujinrobot/kobuki_core/hydro-devel/kobuki_core.rosinstall
+  wstool init -j5 kobuki_core/src https://raw.github.com/yujinrobot/kobuki_core/devel/kobuki_core.rosinstall
   cd kobuki_core
   export PATH=`pwd`/src/catkin/bin/:${PATH}
-  catkin_make
-  cd build; make install
+  catkin_make_isolated --install
 @endcode
 
-The utility catkin_make is just a wrapper around cmake/make. You can just as easily call cmake ../src with the appropriate variables
-for CMAKE_INSTALL_PREFIX amongst others and proceed from there. catkin_make has a few options to allow you to indirectly set these
-cmake variables (again, CMAKE_INSTALL_PREFIX is a useful one, otherwise it defaults to ./install).
+The utility catkin_make_isolated is just a wrapper around cmake/make. The catkin_make_isolated utility has a few options
+to allow direct configuration of various cmake variables (CMAKE_INSTALL_PREFIX is a useful one,
+otherwise it defaults to ./install_isolated).
 
 @subsection test Testing your installation
 
@@ -57,13 +56,15 @@ programs provided with Kobuki driver. You must point your <i>LD_LIBRARY_PATH</i>
 the installed libraries. For example, if you type the following commands, the robot should move making squares:
 
 @code
-  export LD_LIBRARY_PATH=~/kobuki_core/install/lib
-  ~/kobuki_core/install/lib/kobuki_driver/demo_kobuki_simple_loop
+  cd kobuki_core
+  export LD_LIBRARY_PATH=`pwd`/install_isolated/lib
+  ./install_isolated/lib/kobuki_driver/demo_kobuki_simple_loop
 @endcode
 
 @section crossc Cross compiling
 
-We still have not prepared proper cross-compiling documentation, but have done so and we will be happy to help you.
+We still have not prepared proper cross-compiling documentation, but have done so and we will be happy to help you. It simply
+requires following the usual cmake specification of toolchain cmake modules.
 
 @section support Additional support
 
