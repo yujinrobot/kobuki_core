@@ -52,7 +52,9 @@ public:
   AccelerationLimiter() :
     is_enabled(true),
     last_speed(0),
-    last_timestamp(ecl::TimeStamp())
+    last_timestamp(ecl::TimeStamp()),
+    last_vx(0.0),
+    last_wz(0.0)
   {}
   void init(bool enable_acceleration_limiter
     , double linear_acceleration_max_= 0.5, double angular_acceleration_max_= 3.5

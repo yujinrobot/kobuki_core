@@ -29,13 +29,10 @@ public:
     parameters.sigslots_namespace = "/kobuki"; // configure the first part of the sigslot namespace
     parameters.device_port = device_port;    // the serial port to connect to (windows COM1..)
     kobuki.init(parameters);
-    kobuki.enable();
     slot_version_info.connect("/kobuki/version_info");
   }
 
-  ~KobukiManager() {
-    kobuki.disable();
-  }
+  ~KobukiManager() {}
 
   void processVersionInfo(const kobuki::VersionInfo &version_info) {
     hardware = kobuki::VersionInfo::toString(version_info.hardware);
@@ -74,7 +71,8 @@ int main(int argc, char** argv)
   std::cout << "Version Info:" << std::endl;
   KobukiManager kobuki_manager(device_port.getValue());
 
-  while (!kobuki_manager.isAcquired());
+  ecl::MilliSleep sleep_one_hundred_ms(100);
+  while (!kobuki_manager.isAcquired()) { sleep_one_hundred_ms(); }
   std::cout << " * Hardware Version: " << kobuki_manager.getHardwareVersion() << std::endl;
   std::cout << " * Firmware Version: " << kobuki_manager.getFirmwareVersion() << std::endl;
   std::cout << " * Software Version: " << kobuki_manager.getSoftwareVersion() << std::endl;
