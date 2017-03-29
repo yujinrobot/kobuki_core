@@ -2,6 +2,10 @@
 Changelog
 =========
 
+0.7.7 (2017-03-29)
+------------------
+* accel limiter variable initialisation bugfix
+
 0.7.6 (2017-03-27)
 ------------------
 * doxygen updates
@@ -65,7 +69,7 @@ Changelog
 * Removed old printf codes.
 * Removed meaningless buffer size check in serialization of packets.
 * Fixed typo on update_doxygen.bash script.
-* Added extra url info on all packages. 
+* Added extra url info on all packages.
 * Added brief description of update_doxygen.bash script.
 * Added convenient script for automated update of doxygen document to the github.io page.
 * Updated doxygen.
