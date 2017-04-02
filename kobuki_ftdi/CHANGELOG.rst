@@ -2,6 +2,10 @@
 Changelog
 =========
 
+0.7.8 (2017-04-02)
+------------------
+* debian postinstall script for kobuki's udev rule
+
 0.7.5 (2017-03-03)
 ------------------
 * bugfixing the missing pkg-config dependency
