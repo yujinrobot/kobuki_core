@@ -3,5 +3,5 @@
 ###############################################################################
 
 add_subdirectory(driver)
-add_subdirectory(test)
+add_subdirectory(demos)
 add_subdirectory(tools)

@@ -2,6 +2,10 @@
 Changelog
 =========
 
+Forthcoming
+-----------
+* build rules updated for ament
+
 0.7.7 (2017-03-29)
 ------------------
 * accel limiter variable initialisation bugfix

@@ -1,20 +1,21 @@
-<package>
+<?xml version="1.0"?>
+<package format="2">
   <name>kobuki_driver</name>
   <version>0.7.8</version>
   <description>
     C++ driver library for Kobuki:
     Pure C++ driver library for Kobuki. This is for those who do not wish to use ROS on their systems.
   </description>
-  <author email="stonier@yujinrobot.com">Daniel Stonier</author>
-  <author email="yhju@yujinrobot.com">Younghun Ju</author>
-  <author email="jorge@yujinrobot.com">Jorge Santos Simon</author>
+  <author>Daniel Stonier</author>
+  <author>Younghun Ju</author>
+  <author>Jorge Santos Simon</author>
   <maintainer email="stonier@yujinrobot.com">Daniel Stonier</maintainer>
   <license>BSD</license>
   <url type="bugtracker">https://github.com/yujinrobot/kobuki_core/issues</url>
   <url type="repository">https://github.com/yujinrobot/kobuki_core</url>
   <url type="website">http://ros.org/wiki/kobuki_driver</url>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake_ros</buildtool_depend>
 
   <build_depend>ecl_build</build_depend>
   <build_depend>ecl_mobile_robot</build_depend>
@@ -25,11 +26,15 @@
   <build_depend>ecl_time</build_depend>
   <build_depend>ecl_command_line</build_depend>
 
-  <run_depend>ecl_mobile_robot</run_depend>
-  <run_depend>ecl_converters</run_depend>
-  <run_depend>ecl_devices</run_depend>
-  <run_depend>ecl_geometry</run_depend>
-  <run_depend>ecl_sigslots</run_depend>
-  <run_depend>ecl_time</run_depend>
-  <run_depend>ecl_command_line</run_depend>
+  <exec_depend>ecl_mobile_robot</exec_depend>
+  <exec_depend>ecl_converters</exec_depend>
+  <exec_depend>ecl_devices</exec_depend>
+  <exec_depend>ecl_geometry</exec_depend>
+  <exec_depend>ecl_sigslots</exec_depend>
+  <exec_depend>ecl_time</exec_depend>
+  <exec_depend>ecl_command_line</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 </package>

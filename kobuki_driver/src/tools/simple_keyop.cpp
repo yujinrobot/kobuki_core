@@ -86,11 +86,11 @@ private:
   double vx, wz;
   ecl::LegacyPose2D<double> pose;
   kobuki::Kobuki kobuki;
-  ecl::Slot<> slot_stream_data;
 
   double linear_vel_step, linear_vel_max;
   double angular_vel_step, angular_vel_max;
   std::string name;
+  ecl::Slot<> slot_stream_data;
 
   /*********************
    ** Commands
@@ -122,14 +122,14 @@ private:
  * @brief Default constructor, needs initialisation.
  */
 KobukiManager::KobukiManager() :
-                         linear_vel_step(0.05),
-                         linear_vel_max(1.0),
-                         angular_vel_step(0.33),
-                         angular_vel_max(6.6),
-                         quit_requested(false),
-                         key_file_descriptor(0),
-                         vx(0.0), wz(0.0),
-                         slot_stream_data(&KobukiManager::processStreamData, *this)
+  vx(0.0), wz(0.0),
+  linear_vel_step(0.05),
+  linear_vel_max(1.0),
+  angular_vel_step(0.33),
+  angular_vel_max(6.6),
+  slot_stream_data(&KobukiManager::processStreamData, *this),
+  quit_requested(false),
+  key_file_descriptor(0)
 {
   tcgetattr(key_file_descriptor, &original_terminal_state); // get terminal properties
 }
@@ -378,7 +378,7 @@ ecl::LegacyPose2D<double> KobukiManager::getPose() {
 *****************************************************************************/
 
 bool shutdown_req = false;
-void signalHandler(int signum) {
+void signalHandler(int /* signum */) {
   shutdown_req = true;
 }
 
@@ -386,7 +386,7 @@ void signalHandler(int signum) {
 ** Main
 *****************************************************************************/
 
-int main(int argc, char** argv)
+int main(int /* argc */, char** /* argv */)
 {
   signal(SIGINT, signalHandler);
 

@@ -77,7 +77,7 @@ private:
 *****************************************************************************/
 
 bool shutdown_req = false;
-void signalHandler(int signum) {
+void signalHandler(int /* signum */) {
   shutdown_req = true;
 }
 
@@ -85,7 +85,7 @@ void signalHandler(int signum) {
 ** Main
 *****************************************************************************/
 
-int main(int argc, char** argv)
+int main(int /* argc */, char** /* argv */)
 {
   signal(SIGINT, signalHandler);
 

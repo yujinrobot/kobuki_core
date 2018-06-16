@@ -1,21 +1,14 @@
 ##############################################################################
-# SOURCES
+# Sources
 ##############################################################################
 
 file(GLOB SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 
 ##############################################################################
-# CONFIGURATIONS
+# Libraries
 ##############################################################################
 
-set(VERSION_FILE ${PROJECT_BINARY_DIR}/version_info.cpp)
-configure_file(version_info.cpp.in ${VERSION_FILE} @ONLY)
-
-##############################################################################
-# LIBRARIES
-##############################################################################
-
-add_library(${PROJECT_NAME} ${SOURCES} ${VERSION_FILE})
+add_library(${PROJECT_NAME} ${SOURCES})
 
 target_include_directories(
   ${PROJECT_NAME}
@@ -27,11 +20,9 @@ target_include_directories(
 target_link_libraries(
   ${PROJECT_NAME}
   PUBLIC
-    ecl_converters::ecl_converters
-    ecl_devices::ecl_devices
     ecl_geometry::ecl_geometry
-    ecl_mobile_robot::ecl_mobile_robot
-    ecl_sigslots::ecl_sigslots
+    ecl_linear_algebra::ecl_linear_algebra
+    ecl_threads::ecl_threads
 )
 
 set_target_properties(${PROJECT_NAME}

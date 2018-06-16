@@ -127,7 +127,7 @@ public:
 
   void resetBuffer(Buffer &buffer);
   bool serialise(ecl::PushAndPop<unsigned char> & byteStream);
-  bool deserialise(ecl::PushAndPop<unsigned char> & byteStream) { return true; } /**< Unused **/
+  bool deserialise(ecl::PushAndPop<unsigned char> & /* byteStream */) { return true; } /**< Unused **/
 
 private:
   static const unsigned char header0;

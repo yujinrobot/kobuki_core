@@ -15,7 +15,7 @@
 #include "../include/kobuki_ftdi/scanner.hpp"
 #include "../include/kobuki_ftdi/writer.hpp"
 
-int main(int argc, char** argv)
+int main(int /* argc */, char** /* argv */)
 {
   int ret_val;
   FTDI_Scanner scanner;
@@ -54,7 +54,7 @@ int main(int argc, char** argv)
     }
 
     //writing kobuki as serial id
-    if( serial_id.substr(0,6) != std::string("kobuki") ) 
+    if( serial_id.substr(0,6) != std::string("kobuki") )
     {
       std::cout << "Not flashed yet [" << serial_id << "]." << std::endl;
       //return 1; // if not flashed yet

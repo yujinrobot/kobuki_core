@@ -15,7 +15,7 @@
 #include "../include/kobuki_ftdi/scanner.hpp"
 #include "../include/kobuki_ftdi/writer.hpp"
 
-int main(int argc, char** argv)
+int main(int /* argc */, char** /* argv */)
 {
   int ret_val;
   FTDI_Scanner scanner;

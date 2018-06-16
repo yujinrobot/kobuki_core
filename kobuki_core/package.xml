@@ -1,26 +1,28 @@
-<package>
+<?xml version="1.0"?>
+<package format="2">
   <name>kobuki_core</name>
   <version>0.7.8</version>
   <description>
     Non-ROS software for Kobuki, Yujin Robot's mobile research base.
   </description>
-  <author email="stonier@yujinrobot.com">Daniel Stonier</author>
-  <author email="yhju@yujinrobot.com">Younghun Ju</author>
-  <author email="jorge@yujinrobot.com">Jorge Santos Simon</author>
-  <author email="marcus.liebhardt@yujinrobot.com">Marcus Liebhardt</author>
+  <author>Daniel Stonier</author>
+  <author>Younghun Ju</author>
+  <author>Jorge Santos Simon</author>
+  <author>Marcus Liebhardt</author>
   <maintainer email="stonier@yujinrobot.com">Daniel Stonier</maintainer>
   <license>BSD</license>
   <url type="bugtracker">https://github.com/yujinrobot/kobuki_core/issues</url>
   <url type="repository">https://github.com/yujinrobot/kobuki_core</url>
   <url type="website">http://ros.org/wiki/kobuki_core</url>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake_ros</buildtool_depend>
 
-  <run_depend>kobuki_dock_drive</run_depend> 
-  <run_depend>kobuki_driver</run_depend>
-  <run_depend>kobuki_ftdi</run_depend>
+  <exec_depend>kobuki_dock_drive</exec_depend>
+  <exec_depend>kobuki_driver</exec_depend>
+  <exec_depend>kobuki_ftdi</exec_depend>
 
   <export>
+    <build_type>ament_cmake</build_type>
     <metapackage/>
   </export>
 </package>

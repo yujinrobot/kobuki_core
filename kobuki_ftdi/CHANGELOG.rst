@@ -2,6 +2,10 @@
 Changelog
 =========
 
+Forthcoming
+-----------
+* build rules updated for ament
+
 0.7.8 (2017-04-02)
 ------------------
 * debian postinstall script for kobuki's udev rule

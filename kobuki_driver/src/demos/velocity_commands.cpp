@@ -134,7 +134,7 @@ public:
 };
 
 
-int main(int argc, char **argv) {
+int main(int /* argc */, char** /* argv */) {
   std::cout << "Hello Dude" << std::endl;
 
   bias = 0.23;

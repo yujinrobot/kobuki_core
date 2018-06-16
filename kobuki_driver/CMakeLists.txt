@@ -2,56 +2,51 @@
 # Cmake
 ##############################################################################
 
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(kobuki_driver)
 
 ##############################################################################
-# Catkin
+# Find Packages
 ##############################################################################
 
-find_package(catkin
-    REQUIRED
-    COMPONENTS
-        ecl_build
-        ecl_mobile_robot
-        ecl_converters
-        ecl_devices
-        ecl_geometry
-        ecl_sigslots
-        ecl_time
-        ecl_command_line
-)
+find_package(ament_cmake_ros REQUIRED)
+
+find_package(ecl_build REQUIRED)
+find_package(ecl_command_line REQUIRED)
+find_package(ecl_converters REQUIRED)
+find_package(ecl_devices REQUIRED)
+find_package(ecl_geometry REQUIRED)
+find_package(ecl_mobile_robot REQUIRED)
+find_package(ecl_sigslots REQUIRED)
+find_package(ecl_time REQUIRED)
 
 ##############################################################################
-# Exports
+# Platform Configuration
 ##############################################################################
 
-catkin_package(
-    INCLUDE_DIRS include
-    LIBRARIES kobuki
-    CATKIN_DEPENDS
-        ecl_command_line
-        ecl_converters
-        ecl_devices
-        ecl_geometry
-        ecl_mobile_robot
-        ecl_sigslots
-        ecl_time
-)
-
-##############################################################################
-# Project Configuration
-##############################################################################
-
-ecl_enable_cxx11_compiler()
-include_directories(include ${catkin_INCLUDE_DIRS})
+ament_package_xml()
+ecl_enable_cxx14_compiler()
 
 ##############################################################################
 # Sources
 ##############################################################################
 
+add_subdirectory(include)
 add_subdirectory(src)
 
-install(DIRECTORY include/${PROJECT_NAME}/
-        DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+##############################################################################
+# Exports
+##############################################################################
+
+ament_export_interfaces(${PROJECT_NAME})
+ament_export_dependencies(
+    ecl_converters
+    ecl_devices
+    ecl_geometry
+    ecl_mobile_robot
+    ecl_sigslots
+    ecl_time
 )
+# TODO: deprecate this line post 'ardent' (been fixed upstream)
+ament_export_libraries(${PROJECT_NAME})
+ament_package()
