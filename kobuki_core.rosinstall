@@ -6,8 +6,9 @@
 
 # Kobuki Core / Yujin stacks
 
-- git: {local-name: catkin,         version: kinetic-devel, uri: 'https://github.com/ros/catkin.git'}
-- git: {local-name: cmake_modules,  version: 0.4-devel,     uri: 'https://github.com/ros/cmake_modules.git'}
+# Warning: this is no longer valid - it requires inclusion of repositories
+# that enable an ament build of the workspace.
+
 - git: {local-name: ecl_tool,       version: devel,         uri: 'https://github.com/stonier/ecl_tools.git'}
 - git: {local-name: ecl_lite,       version: devel,         uri: 'https://github.com/stonier/ecl_lite.git'}
 - git: {local-name: ecl_core,       version: devel,         uri: 'https://github.com/stonier/ecl_core.git'}
