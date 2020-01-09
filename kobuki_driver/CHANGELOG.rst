@@ -4,7 +4,11 @@ Changelog
 
 Forthcoming
 -----------
-* build rules updated for ament
+* ...
+
+0.8.0 (2019-01-09)
+------------------
+* updated build infra for changes ament/eloquent
 
 0.7.7 (2017-03-29)
 ------------------
