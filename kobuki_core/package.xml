@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>kobuki_core</name>
-  <version>0.8.0</version>
+  <version>0.8.1</version>
   <description>
     Non-ROS software for Kobuki, Yujin Robot's mobile research base.
   </description>
