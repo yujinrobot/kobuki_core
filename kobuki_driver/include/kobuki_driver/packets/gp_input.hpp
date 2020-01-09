@@ -37,7 +37,7 @@ class GpInput : public packet_handler::payloadBase
 public:
   GpInput() : packet_handler::payloadBase(false, 16) {};
   struct Data {
-    Data() : analog_input(4) {}
+    Data() : digital_input(0), analog_input(4) {}
     uint16_t digital_input;
     /**
      * This currently returns 4 unsigned shorts containing analog values that
@@ -71,7 +71,7 @@ public:
       return false;
     }
 
-    unsigned char header_id, length_packed;
+    unsigned char header_id(0x00), length_packed(0x00);
     buildVariable(header_id, byteStream);
     buildVariable(length_packed, byteStream);
     if( header_id != Header::GpInput ) return false;

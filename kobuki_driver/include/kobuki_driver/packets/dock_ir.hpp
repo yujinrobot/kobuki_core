@@ -58,7 +58,7 @@ public:
       return false;
     }
 
-    unsigned char header_id, length_packed;
+    unsigned char header_id(0x00), length_packed(0x00);
     buildVariable(header_id, byteStream);
     buildVariable(length_packed, byteStream);
     if( header_id != Header::DockInfraRed ) return false;
