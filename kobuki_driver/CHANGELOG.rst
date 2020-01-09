@@ -2,9 +2,13 @@
 Changelog
 =========
 
-Forthcoming
------------
+0.8.1 (2020-01-09)
+------------------
 * ...
+
+0.8.1 (2019-01-09)
+------------------
+* remove unused and dodgy float builder, fixed uninitialised warnings, `#53 <https://github.com/yujinrobot/kobuki_core/pull/53>`_.
 
 0.8.0 (2019-01-09)
 ------------------

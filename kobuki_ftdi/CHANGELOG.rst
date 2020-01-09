@@ -2,8 +2,8 @@
 Changelog
 =========
 
-Forthcoming
------------
+0.8.1 (2020-01-09)
+------------------
 * build rules updated for ament
 
 0.7.8 (2017-04-02)
