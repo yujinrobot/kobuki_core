@@ -10,11 +10,14 @@
  * Includes
  ****************************************************************************/
 
+#include <string>
+
 #include <csignal>
 #include <ecl/time.hpp>
 #include <ecl/sigslots.hpp>
 #include <ecl/geometry/legacy_pose2d.hpp>
 #include <ecl/linear_algebra.hpp>
+#include <ecl/command_line.hpp>
 #include "kobuki_driver/kobuki.hpp"
 
 /*****************************************************************************
@@ -23,13 +26,13 @@
 
 class KobukiManager {
 public:
-  KobukiManager() :
+  KobukiManager(const std::string & device) :
     dx(0.0), dth(0.0),
     slot_stream_data(&KobukiManager::processStreamData, *this)
   {
     kobuki::Parameters parameters;
     parameters.sigslots_namespace = "/kobuki";
-    parameters.device_port = "/dev/kobuki";
+    parameters.device_port = device;
     parameters.enable_acceleration_limiter = false;
     kobuki.init(parameters);
     kobuki.enable();
@@ -85,12 +88,17 @@ void signalHandler(int /* signum */) {
 ** Main
 *****************************************************************************/
 
-int main(int /* argc */, char** /* argv */)
+int main(int argc, char** argv)
 {
+  ecl::CmdLine cmd_line("simple_loop demo", ' ', "0.2");
+  ecl::UnlabeledValueArg<std::string> device_port("device_port", "Path to device file of serial port to open, connected to the kobuki", false, "/dev/kobuki", "string");
+  cmd_line.add(device_port);
+  cmd_line.parse(argc, argv);
+
   signal(SIGINT, signalHandler);
 
   std::cout << "Demo : Example of simple control loop." << std::endl;
-  KobukiManager kobuki_manager;
+  KobukiManager kobuki_manager(device_port.getValue());
 
   ecl::Sleep sleep(1);
   ecl::LegacyPose2D<double> pose;

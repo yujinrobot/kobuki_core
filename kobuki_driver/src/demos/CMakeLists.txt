@@ -7,6 +7,7 @@ macro(kobuki_driver_add_demo name)
   add_executable(${target_name} ${name}.cpp)
   target_link_libraries(${target_name}
     ${PROJECT_NAME}
+    ecl_command_line::ecl_command_line
   )
   set_target_properties(${target_name} PROPERTIES OUTPUT_NAME demo_${name})
   install(

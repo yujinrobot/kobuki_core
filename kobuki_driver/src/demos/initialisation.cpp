@@ -8,15 +8,17 @@
 *****************************************************************************/
 
 #include <iostream>
+#include <string>
 #include <kobuki_driver/kobuki.hpp>
 #include <ecl/time.hpp>
+#include <ecl/command_line.hpp>
 
 class KobukiManager {
 public:
-  KobukiManager() {
+  KobukiManager(const std::string & device) {
     kobuki::Parameters parameters;
     // change the default device port from /dev/kobuki to /dev/ttyUSB0
-    parameters.device_port = "/dev/ttyUSB0";
+    parameters.device_port = device;
     // Other parameters are typically happy enough as defaults
     // namespaces all sigslot connection names under this value, only important if you want to
     parameters.sigslots_namespace = "/kobuki";
@@ -40,8 +42,13 @@ private:
   kobuki::Kobuki kobuki;
 };
 
-int main() {
-  KobukiManager kobuki_manager;
+int main(int argc, char** argv) {
+  ecl::CmdLine cmd_line("initialisation demo", ' ', "0.2");
+  ecl::UnlabeledValueArg<std::string> device_port("device_port", "Path to device file of serial port to open, connected to the kobuki", false, "/dev/kobuki", "string");
+  cmd_line.add(device_port);
+  cmd_line.parse(argc, argv);
+
+  KobukiManager kobuki_manager(device_port.getValue());
   ecl::Sleep()(5);
   return 0;
 }
