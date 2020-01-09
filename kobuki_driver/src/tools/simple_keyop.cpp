@@ -41,6 +41,7 @@
 #include <string>
 #include <csignal>
 #include <termios.h> // for keyboard input
+#include <ecl/command_line.hpp>
 #include <ecl/time.hpp>
 #include <ecl/threads.hpp>
 #include <ecl/sigslots.hpp>
@@ -65,7 +66,7 @@ public:
    **********************/
   KobukiManager();
   ~KobukiManager();
-  bool init();
+  bool init(const std::string & device);
 
   /*********************
    ** Runtime
@@ -144,7 +145,7 @@ KobukiManager::~KobukiManager()
 /**
  * @brief Initialises the node.
  */
-bool KobukiManager::init()
+bool KobukiManager::init(const std::string & device)
 {
   /*********************
    ** Parameters
@@ -165,7 +166,7 @@ bool KobukiManager::init()
    **********************/
   kobuki::Parameters parameters;
   parameters.sigslots_namespace = "/kobuki";
-  parameters.device_port = "/dev/kobuki";
+  parameters.device_port = device;
   parameters.enable_acceleration_limiter = true;
 
   kobuki.init(parameters);
@@ -386,13 +387,18 @@ void signalHandler(int /* signum */) {
 ** Main
 *****************************************************************************/
 
-int main(int /* argc */, char** /* argv */)
+int main(int argc, char** argv)
 {
+  ecl::CmdLine cmd_line("simple_keyop program", ' ', "0.2");
+  ecl::UnlabeledValueArg<std::string> device_port("device_port", "Path to device file of serial port to open, connected to the kobuki", false, "/dev/kobuki", "string");
+  cmd_line.add(device_port);
+  cmd_line.parse(argc, argv);
+
   signal(SIGINT, signalHandler);
 
   std::cout << "Simple Keyop : Utility for driving kobuki by keyboard." << std::endl;
   KobukiManager kobuki_manager;
-  kobuki_manager.init();
+  kobuki_manager.init(device_port.getValue());
 
   ecl::Sleep sleep(1);
   ecl::LegacyPose2D<double> pose;
