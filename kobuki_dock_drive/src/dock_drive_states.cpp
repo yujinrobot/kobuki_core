@@ -76,9 +76,9 @@ namespace kobuki {
    *  @rotated       - indicates how much the robot has rotated while scan
    ********************************************************/
   void DockDrive::scan(RobotDockingState::State& nstate,double& nvx, double& nwz, const std::vector<unsigned char>& signal_filt, const ecl::LegacyPose2D<double>& pose_update, std::string& debug_str) {
-    unsigned char right = signal_filt[0];
+    // unsigned char right = signal_filt[0];
     unsigned char mid   = signal_filt[1];
-    unsigned char left  = signal_filt[2];
+    // unsigned char left  = signal_filt[2];
 
     RobotDockingState::State next_state;
     double next_vx;
@@ -146,11 +146,11 @@ namespace kobuki {
    ********************************************************/
   void DockDrive::find_stream(RobotDockingState::State& nstate,double& nvx, double& nwz, const std::vector<unsigned char>& signal_filt) {
     unsigned char right = signal_filt[0];
-    unsigned char mid   = signal_filt[1];
+    // unsigned char mid   = signal_filt[1];
     unsigned char left  = signal_filt[2];
-    RobotDockingState::State next_state;
-    double next_vx;
-    double next_wz;
+    RobotDockingState::State next_state = RobotDockingState::UNKNOWN;
+    double next_vx = 0.0;
+    double next_wz = 0.0;
 
     if(dock_detector > 0) // robot is located in right side of dock
     {
@@ -198,11 +198,11 @@ namespace kobuki {
   void DockDrive::get_stream(RobotDockingState::State& nstate,double& nvx, double& nwz, const std::vector<unsigned char>& signal_filt)
   {
     unsigned char right = signal_filt[0];
-    unsigned char mid   = signal_filt[1];
+    // unsigned char mid   = signal_filt[1];
     unsigned char left  = signal_filt[2];
-    RobotDockingState::State next_state;
-    double next_vx;
-    double next_wz;
+    RobotDockingState::State next_state = RobotDockingState::UNKNOWN;
+    double next_vx = 0.0;
+    double next_wz = 0.0;
 
     if(dock_detector > 0) { // robot is located in right side of dock
       if (left & (DockStationIRState::FAR_LEFT + DockStationIRState::NEAR_LEFT)) {
@@ -249,9 +249,9 @@ namespace kobuki {
   ********************************************************/
   void DockDrive::aligned(RobotDockingState::State& nstate,double& nvx, double& nwz, const std::vector<unsigned char>& signal_filt, std::string& debug_str)
   {
-    unsigned char right = signal_filt[0];
+    // unsigned char right = signal_filt[0];
     unsigned char mid   = signal_filt[1];
-    unsigned char left  = signal_filt[2];
+    // unsigned char left  = signal_filt[2];
     RobotDockingState::State next_state = nstate;
     double next_vx = nvx;
     double next_wz = nwz;

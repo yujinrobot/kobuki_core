@@ -11,11 +11,16 @@ macro(kobuki_ftdi_add_utility name)
     ${target_name}
     PRIVATE
       $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    PUBLIC
+      ${libusb_INCLUDE_DIRS}
+      ${libftdi_INCLUDE_DIRS}
   )
   target_link_libraries(
     ${target_name}
     ecl_command_line::ecl_command_line
     ${ARGN}
+    ${libusb_LDFLAGS}
+    ${libftdi_LDFLAGS}
   )
   install(
     TARGETS
@@ -39,4 +44,3 @@ kobuki_ftdi_add_utility(flasher usb ftdi)
 kobuki_ftdi_add_utility(reset_device usb)
 kobuki_ftdi_add_utility(overwrite_serial_number usb ftdi)
 kobuki_ftdi_add_utility(unflasher usb ftdi)
-

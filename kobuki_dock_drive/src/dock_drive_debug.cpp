@@ -45,7 +45,7 @@ namespace kobuki {
 /***********************************************************
   @breif generates debug string to tell the current status of robot. Signal info + bumper + charger + current velocity + dock detector
  ***********************************************************/
-void DockDrive::generateDebugMessage(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::LegacyPose2D<double>& pose_update, const std::string& debug_str)
+void DockDrive::generateDebugMessage(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const std::string& debug_str)
 {
 
   std::ostringstream debug_stream;

@@ -56,16 +56,17 @@ namespace kobuki {
 ** Implementation
 *****************************************************************************/
 DockDrive::DockDrive() :
-  is_enabled(false), can_run(false)
+  is_enabled(false)
+  , can_run(false)
   , state(RobotDockingState::IDLE), state_str("IDLE")
   , vx(0.0), wz(0.0)
+  , signal_window(20)
   , bump_remainder(0)
   , dock_stabilizer(0)
   , dock_detector(0)
   , rotated(0.0)
   , min_abs_v(0.01)
   , min_abs_w(0.1)
-  , signal_window(20)
   , ROBOT_STATE_STR(13)
 {
   // Debug messages
@@ -134,7 +135,7 @@ void DockDrive::update(const std::vector<unsigned char> &signal
   velocityCommands(vx, wz);
 
   // for easy debugging
-  generateDebugMessage(signal_filt, bumper, charger, pose_update, debug_str);
+  generateDebugMessage(signal_filt, bumper, charger, debug_str);
 
   return;
 }
@@ -196,7 +197,7 @@ void DockDrive::velocityCommands(const double &vx_, const double &wz_) {
  *
  ****************************************************/
 void DockDrive::processBumpChargeEvent(const unsigned char& bumper, const unsigned char& charger) {
-  RobotDockingState::State new_state;
+  RobotDockingState::State new_state = RobotDockingState::UNKNOWN;
   if(charger && bumper) {
     new_state = RobotDockingState::BUMPED_DOCK;
     setStateVel(new_state, -0.01, 0.0);

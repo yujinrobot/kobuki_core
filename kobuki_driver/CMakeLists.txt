@@ -13,9 +13,11 @@ find_package(ament_cmake_ros REQUIRED)
 
 find_package(ecl_build REQUIRED)
 find_package(ecl_command_line REQUIRED)
+find_package(ecl_config REQUIRED)
 find_package(ecl_converters REQUIRED)
 find_package(ecl_devices REQUIRED)
 find_package(ecl_geometry REQUIRED)
+find_package(ecl_threads REQUIRED)
 find_package(ecl_mobile_robot REQUIRED)
 find_package(ecl_sigslots REQUIRED)
 find_package(ecl_time REQUIRED)
@@ -26,6 +28,7 @@ find_package(ecl_time REQUIRED)
 
 ament_package_xml()
 ecl_enable_cxx14_compiler()
+ecl_enable_cxx_warnings()
 
 ##############################################################################
 # Sources
@@ -40,13 +43,21 @@ add_subdirectory(src)
 
 ament_export_interfaces(${PROJECT_NAME})
 ament_export_dependencies(
+    ecl_config
     ecl_converters
     ecl_devices
     ecl_geometry
     ecl_mobile_robot
     ecl_sigslots
+    ecl_threads
     ecl_time
+    )
+
+install(
+    DIRECTORY include/
+    DESTINATION include
 )
+ament_export_include_directories(include)
 # TODO: deprecate this line post 'ardent' (been fixed upstream)
 ament_export_libraries(${PROJECT_NAME})
 ament_package()

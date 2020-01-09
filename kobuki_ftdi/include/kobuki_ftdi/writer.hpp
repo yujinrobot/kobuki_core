@@ -55,7 +55,6 @@ public:
    * A constructor, that more elaborated..
    */
   FTDI_Writer() :
-    log_level(0),
     serial_only(false),
     use_first_device(false),
     vendor_id(0x0403),
@@ -278,7 +277,6 @@ public:
   }
 
 private:
-  int log_level; /**< currently unused. */
   bool serial_only; /**< flags to control internal behavior of writer class. */
   bool use_first_device; /**< flags to control internal behavior of writer class. */
 

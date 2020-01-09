@@ -132,7 +132,7 @@ Command Command::SetExternalPower(const DigitalOutput &digital_output, Command::
   return outgoing;
 }
 
-Command Command::PlaySoundSequence(const enum SoundSequences &number, Command::Data &current_data)
+Command Command::PlaySoundSequence(const enum SoundSequences &number)
 {
   uint16_t value; // gp_out is 16 bits
   value = number; // defined with the correct bit specification.

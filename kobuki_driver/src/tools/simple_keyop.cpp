@@ -197,7 +197,7 @@ void KobukiManager::spin()
     thread.cancel();
   }
 */
-  ecl::Sleep sleep(0.1);
+  ecl::Sleep sleep(ecl::Duration(0.1));
   while (!quit_requested){
     sleep();
   }

@@ -225,9 +225,7 @@ bool PacketFinderBase::WaitForStx(const unsigned char datum)
 bool PacketFinderBase::waitForPayloadSize(const unsigned char * incoming, unsigned int numberOfIncoming)
 {
   // push data
-  unsigned char first_byte;
   for (unsigned int i = 0; i < numberOfIncoming; i++) {
-    first_byte = incoming[i];
     buffer.push_back(incoming[i]);
   }
 

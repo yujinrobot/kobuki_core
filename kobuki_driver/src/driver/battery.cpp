@@ -56,7 +56,7 @@ Battery::Battery (const uint8_t &new_voltage, const uint8_t &charger_flag) :
   } else {
     charging_source = Dock;
   }
-};
+}
 
 Battery::Level Battery::level() const {
   if ( charging_state == Charged ) { return Maximum; }

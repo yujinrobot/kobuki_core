@@ -181,7 +181,7 @@ inline void payloadBase::buildBytes<float>(const float & V, ecl::PushAndPop<unsi
 //}
 
 }
-;
+
 // namespace packet_handler
 
 #endif /* ROBOT_DATA_HPP_ */

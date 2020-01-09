@@ -113,7 +113,7 @@ protected:
   void processBumpChargeEvent(const unsigned char& bumper, const unsigned char& charger);
   void computePoseUpdate(ecl::LegacyPose2D<double>& pose_update, const ecl::LegacyPose2D<double>& pose);
   void filterIRSensor(std::vector<unsigned char>& signal_filt,const std::vector<unsigned char> &signal );
-  void generateDebugMessage(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const ecl::LegacyPose2D<double>& pose_update, const std::string& debug_str);
+  void generateDebugMessage(const std::vector<unsigned char>& signal_filt, const unsigned char &bumper, const unsigned char &charger, const std::string& debug_str);
   void updateVelocity(const std::vector<unsigned char>& signal_filt, const ecl::LegacyPose2D<double>& pose_update, std::string& debug_str);
   RobotDockingState::State determineRobotLocation(const std::vector<unsigned char>& signal_filt,const unsigned char& charger);
   bool validateSignal(const std::vector<unsigned char>& signal_filt, const unsigned int state);

@@ -10,7 +10,7 @@
 
 #include "kobuki_ftdi/scanner.hpp"
 
-int main(int argc, char** argv)
+int main()
 {
   int ret_val;
   FTDI_Scanner scanner;

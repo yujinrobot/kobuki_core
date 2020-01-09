@@ -114,7 +114,7 @@ public:
     for (unsigned int i=0; i<devices.size(); i++) {
       struct usb_device *dev = devices[i];
       usb_dev_handle *h = usb_open(dev);
-      if ( h < 0 ) continue;
+      if ( h == nullptr ) continue;
 
       std::map<std::string, std::string> M_desc;
       if ( usb_get_string_simple(h, dev->descriptor.iSerialNumber, buff, 128) < 0 ) continue;
@@ -216,7 +216,7 @@ public:
 
     struct usb_device *dev = devices[0];
     usb_dev_handle *h = usb_open(dev);
-    if( h < 0 ) {
+    if( h == nullptr ) {
       return -1;
     }
     int ret_val = usb_reset(h);

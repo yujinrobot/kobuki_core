@@ -125,7 +125,7 @@ protected:
 };
 
 }
-;
+
 // namespace kobuki
 
 #endif /* PACKET_FINDER_HPP_ */
