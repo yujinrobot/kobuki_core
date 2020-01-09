@@ -5,7 +5,9 @@ echo "This script copies a udev rule to /etc to facilitate bringing"
 echo "up the kobuki usb connection as /dev/kobuki."
 echo ""
 
-sudo cp `rospack find kobuki_ftdi`/57-kobuki.rules /etc/udev/rules.d
+PWD="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+sudo cp ${PWD}/../../share/kobuki_ftdi/57-kobuki.rules /etc/udev/rules.d
 
 
 echo ""

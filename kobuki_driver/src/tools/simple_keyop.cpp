@@ -260,27 +260,27 @@ void KobukiManager::processKeyboardInput(char c)
    */
   switch (c)
   {
-    case 68://kobuki_msgs::KeyboardInput::KeyCode_Left:
+    case 68://kobuki_msgs::KeyboardInput::KEYCODE_LEFT:
     {
       incrementAngularVelocity();
       break;
     }
-    case 67://kobuki_msgs::KeyboardInput::KeyCode_Right:
+    case 67://kobuki_msgs::KeyboardInput::KEYCODE_RIGHT:
     {
       decrementAngularVelocity();
       break;
     }
-    case 65://kobuki_msgs::KeyboardInput::KeyCode_Up:
+    case 65://kobuki_msgs::KeyboardInput::KEYCODE_UP:
     {
       incrementLinearVelocity();
       break;
     }
-    case 66://kobuki_msgs::KeyboardInput::KeyCode_Down:
+    case 66://kobuki_msgs::KeyboardInput::KEYCODE_DOWN:
     {
       decrementLinearVelocity();
       break;
     }
-    case 32://kobuki_msgs::KeyboardInput::KeyCode_Space:
+    case 32://kobuki_msgs::KeyboardInput::KEYCODE_SPACE:
     {
       resetVelocity();
       break;
