@@ -60,7 +60,9 @@ public:
     use_first_device(false),
     vendor_id(0x0403),
     product_id(0x6001)
-  {;}
+  {
+    (void) log_level;
+  }
 
   /**
    * reset flags to default state.

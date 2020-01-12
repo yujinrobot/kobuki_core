@@ -55,7 +55,11 @@ public:
     last_timestamp(ecl::TimeStamp()),
     last_vx(0.0),
     last_wz(0.0)
-  {}
+  {
+    (void) last_speed;
+    (void) last_radius;
+  }
+
   void init(bool enable_acceleration_limiter
     , double linear_acceleration_max_= 0.5, double angular_acceleration_max_= 3.5
     , double linear_deceleration_max_=-0.5*1.2, double angular_deceleration_max_=-3.5*1.2)
@@ -122,6 +126,8 @@ public:
       ret_val.push_back(command_wz);
       return ret_val;
     }
+
+    return {};
   }
 
 private:
