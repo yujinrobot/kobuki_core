@@ -51,11 +51,11 @@ bool PacketFinder::checkSum()
 Kobuki::Kobuki() :
     shutdown_requested(false)
     , is_enabled(false)
+    , heading_offset(0.0/0.0)
     , is_connected(false)
     , is_alive(false)
     , version_info_reminder(0)
     , controller_info_reminder(0)
-    , heading_offset(0.0/0.0)
     , velocity_commands_debug(4, 0)
 {
 }

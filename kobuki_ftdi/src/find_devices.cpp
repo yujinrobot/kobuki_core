@@ -15,7 +15,7 @@
 
 #include "kobuki_ftdi/scanner.hpp"
 
-int main(int argc, char** argv)
+int main(int /* argc */, char** /* argv */)
 {
   FTDI_Scanner scanner;
   int no_devices = scanner.scan();

@@ -46,7 +46,7 @@
  ** Main
  *****************************************************************************/
 
-int main(int argc, char **argv)
+int main(int /* argc */, char ** /* argv */)
 {
 
   int ret, i, no_devices;
