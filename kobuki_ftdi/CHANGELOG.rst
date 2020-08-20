@@ -2,6 +2,11 @@
 Changelog
 =========
 
+
+Forthcoming
+-----------
+* [udev] restore low latency timer for ftdi operation
+
 0.7.8 (2017-04-02)
 ------------------
 * debian postinstall script for kobuki's udev rule
