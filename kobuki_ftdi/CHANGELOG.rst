@@ -5,6 +5,10 @@ Changelog
 
 Forthcoming
 -----------
+* ...
+
+0.7.9 (2018-08-20)
+------------------
 * [udev] restore low latency timer for ftdi operation
 
 0.7.8 (2017-04-02)
