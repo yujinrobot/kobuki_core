@@ -10,6 +10,7 @@
  ****************************************************************************/
 
 #include <string>
+#include <ecl/console.hpp>
 #include <ecl/time.hpp>
 #include <ecl/sigslots.hpp>
 #include <ecl/command_line.hpp>
@@ -23,12 +24,16 @@ class KobukiManager {
 public:
   KobukiManager(const std::string &device_port) :
     acquired(false),
+    slot_debug_error(&KobukiManager::relayErrors, *this),
+    slot_debug_warning(&KobukiManager::relayWarnings, *this),
     slot_version_info(&KobukiManager::processVersionInfo, *this)
   {
     kobuki::Parameters parameters;
     parameters.sigslots_namespace = "/kobuki"; // configure the first part of the sigslot namespace
     parameters.device_port = device_port;    // the serial port to connect to (windows COM1..)
     kobuki.init(parameters);
+    slot_debug_warning.connect("/kobuki/ros_warn");
+    slot_debug_error.connect("/kobuki/ros_error");
     slot_version_info.connect("/kobuki/version_info");
   }
 
@@ -43,6 +48,14 @@ public:
     acquired = true;
   }
 
+  void relayWarnings(const std::string& message) {
+    std::cout << ecl::yellow << "[WARNING] " << message << ecl::reset << std::endl;
+  }
+
+  void relayErrors(const std::string& message) {
+    std::cout << ecl::red << "[ERROR] " << message << ecl::reset << std::endl;
+  }
+
   bool isAcquired() { return acquired; }
   std::string& getHardwareVersion() { return hardware; }
   std::string& getFirmwareVersion() { return firmware; }
@@ -53,6 +66,7 @@ private:
   volatile bool acquired;
   kobuki::Kobuki kobuki;
   std::string hardware, firmware, software, udid;
+  ecl::Slot<const std::string&> slot_debug_error, slot_debug_warning;
   ecl::Slot<const kobuki::VersionInfo&> slot_version_info;
 };
 

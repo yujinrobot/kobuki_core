@@ -13,6 +13,7 @@ find_package(catkin
     REQUIRED
     COMPONENTS
         ecl_build
+        ecl_console
         ecl_mobile_robot
         ecl_converters
         ecl_devices
@@ -31,6 +32,7 @@ catkin_package(
     LIBRARIES kobuki
     CATKIN_DEPENDS
         ecl_command_line
+        ecl_console
         ecl_converters
         ecl_devices
         ecl_geometry

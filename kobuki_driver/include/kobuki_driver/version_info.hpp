@@ -20,6 +20,8 @@
 #include <string>
 #include <sstream>
 #include <stdint.h>
+#include <vector>
+
 #include "macros.hpp"
 
 /*****************************************************************************
@@ -51,11 +53,36 @@ public:
   const uint32_t udid1;
   const uint32_t udid2;
 
+  static int major(const uint32_t &version) {
+    return ((version & 0x00FF0000) >> 16);
+  }
+
+  static int minor(const uint32_t &version) {
+    return ((version & 0x0000FF00) >> 8);
+  }
+
+  static int patch(const uint32_t &version) {
+    return (version & 0x000000FF);
+  }
+
   static std::string toString(const uint32_t &version)
   {
     // Convert an unsigned int into a string of type <major>.<minor>.<patch>; first byte is ignored
     std::stringstream ss;
-    ss << ((version & 0x00FF0000) >> 16) << "." << ((version & 0x0000FF00) >>  8) << "." << (version & 0x000000FF);
+    ss << major(version) << "." << minor(version) << "." << patch(version);
+    return std::string(ss.str());
+  }
+
+  static std::string toString(const std::vector<uint32_t> &versions)
+  {
+    std::stringstream ss;
+    std::size_t number_versions = versions.size();
+    for(std::size_t i = 0; i < number_versions; ++i) {
+      ss << VersionInfo::toString(versions[i]);
+      if (i != (number_versions - 1)) {
+        ss << " / ";
+      }
+    }
     return std::string(ss.str());
   }
 
