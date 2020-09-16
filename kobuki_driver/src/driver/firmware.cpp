@@ -105,9 +105,9 @@ int Firmware::checkRecommendedVersion() const
 
   // if flashed version is > all recommended versions, return 1, else -1
   for ( uint32_t version : RECOMMENDED_VERSIONS ) {
-    int recommended_major_version = VersionInfo::major(version);
-    int recommended_minor_version = VersionInfo::minor(version);
-    int recommended_patch_version = VersionInfo::patch(version);
+    int recommended_major_version = VersionInfo::majorVersion(version);
+    int recommended_minor_version = VersionInfo::minorVersion(version);
+    int recommended_patch_version = VersionInfo::patchVersion(version);
     if ( majorVersion() > recommended_major_version ) {
       continue;
     } else if ( majorVersion() < recommended_major_version ) {
