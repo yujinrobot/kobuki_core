@@ -3,12 +3,12 @@ Changelog
 =========
 
 0.7.11 (2020-09-15)
-------------------
+-------------------
 * [core] fix version macro pullution
 * [infra] fix cmake project version warnings
 
 0.7.10 (2020-09-13)
-------------------
+-------------------
 * [firmware] recommended version checking for 1.1.4 and 1.2.0
 
 0.7.7 (2017-03-29)
