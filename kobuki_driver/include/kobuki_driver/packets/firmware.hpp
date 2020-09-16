@@ -63,9 +63,9 @@ public:
   }
 
   const uint32_t& version() const { return data.version; }
-  int majorVersion() const { return VersionInfo::major(data.version); }
-  int minorVersion() const { return VersionInfo::minor(data.version); }
-  int patchVersion() const { return VersionInfo::patch(data.version); }
+  int majorVersion() const { return VersionInfo::majorVersion(data.version); }
+  int minorVersion() const { return VersionInfo::minorVersion(data.version); }
+  int patchVersion() const { return VersionInfo::patchVersion(data.version); }
 
   int checkMajorVersion() const;
   int checkRecommendedVersion() const;

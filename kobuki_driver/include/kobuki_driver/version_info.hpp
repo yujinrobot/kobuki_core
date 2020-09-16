@@ -53,15 +53,15 @@ public:
   const uint32_t udid1;
   const uint32_t udid2;
 
-  static int major(const uint32_t &version) {
+  static int majorVersion(const uint32_t &version) {
     return ((version & 0x00FF0000) >> 16);
   }
 
-  static int minor(const uint32_t &version) {
+  static int minorVersion(const uint32_t &version) {
     return ((version & 0x0000FF00) >> 8);
   }
 
-  static int patch(const uint32_t &version) {
+  static int patchVersion(const uint32_t &version) {
     return (version & 0x000000FF);
   }
 
@@ -69,7 +69,7 @@ public:
   {
     // Convert an unsigned int into a string of type <major>.<minor>.<patch>; first byte is ignored
     std::stringstream ss;
-    ss << major(version) << "." << minor(version) << "." << patch(version);
+    ss << majorVersion(version) << "." << minorVersion(version) << "." << patchVersion(version);
     return std::string(ss.str());
   }
 
